@@ -1,0 +1,7 @@
+/* styles.css — small extras beyond Tailwind */
+
+/* make sure focus outlines are visible */
+:focus{ outline: 2px solid #60a5fa; outline-offset: 2px; }
+
+/* small responsive tweak for the SVG */
+#contribSVG{ height:128px; max-height:200px; }

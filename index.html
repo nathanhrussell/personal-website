@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Nathan Russell — Full-stack developer. Projects: ChatApp, OdinBook. Minimal, fast, accessible portfolio.">
+    <meta name="theme-color" content="#ffffff">
+    <title>Nathan Russell — Full-stack Developer</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      :root{
+        --bg: #ffffff; --text: #111827; --ui: #e5e7eb; --accent: #3b82f6; --secondary: #f59e0b;
+      }
+      [data-theme="dark"]{ --bg:#111827; --text:#f9fafb; --ui:#374151; --accent:#60a5fa; --secondary:#fbbf24; }
+      html{ background:var(--bg); color:var(--text); transition:background-color .3s,color .3s; }
+      body{ font-family: 'Inter', sans-serif; }
+      h1,h2,h3,h4,h5,h6{ font-family: 'Lora', serif; }
+      .reveal{ opacity:1 !important; transform:none !important; }
+    </style>
+
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="antialiased">
+    <header class="sticky top-0 bg-[color:var(--bg)]/80 backdrop-blur z-40 border-b" role="banner">
+      <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="text-lg font-semibold">Nathan Russell</div>
+        <nav aria-label="Primary" class="flex items-center gap-4">
+          <a href="#projects" class="text-sm">Projects</a>
+          <a href="#about" class="text-sm">About</a>
+          <a href="#contact" class="text-sm">Contact</a>
+          <button id="themeToggle" aria-label="Toggle dark mode" aria-pressed="false" class="ml-2 px-2 py-1 rounded focus:outline focus:outline-2 focus:outline-offset-2" >
+            <span id="themeIcon">🌙</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8" id="main" role="main">
+      <section id="home" class="my-12" data-reveal>
+        <h1 class="text-3xl md:text-4xl font-bold mb-3">Hi — I build thoughtful, reliable web apps.</h1>
+        <p class="text-gray-600 mb-6">Full-stack developer focused on clarity, accessibility, and performance. I build projects that ship.</p>
+        <div class="flex gap-3">
+          <a href="#projects" class="inline-block bg-[color:var(--accent)] text-white px-4 py-2 rounded">Projects</a>
+          <a href="https://github.com/" class="inline-block border px-4 py-2 rounded">GitHub</a>
+        </div>
+      </section>
+
+      <section id="about" class="my-12" data-reveal>
+        <h2 class="text-2xl font-semibold mb-3">About</h2>
+        <p class="text-gray-600">I used to work as a translator and now make full-stack apps. I care about accessibility, performance, and small details. <a href="#" class="text-[color:var(--accent)]">Read more about my translation background</a>.</p>
+      </section>
+
+      <section id="projects" class="my-12" data-reveal>
+        <h2 class="text-2xl font-semibold mb-4">Projects</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <article class="border rounded p-4" data-reveal>
+            <h3 class="text-lg font-semibold">ChatApp</h3>
+            <p class="text-sm text-gray-600">A real-time chat app with rooms and presence.</p>
+            <ul class="list-disc list-inside text-sm mt-2 text-gray-600">
+              <li>WebSocket-powered live updates</li>
+              <li>Auth and private rooms</li>
+              <li>Accessible, responsive UI</li>
+            </ul>
+            <div class="mt-3 flex gap-2">
+              <a class="text-sm border px-3 py-1 rounded" href="#">Source on GitHub</a>
+              <a class="text-sm border px-3 py-1 rounded" href="#">Read docs</a>
+            </div>
+          </article>
+
+          <article class="border rounded p-4" data-reveal>
+            <h3 class="text-lg font-semibold">OdinBook</h3>
+            <p class="text-sm text-gray-600">A small social network built during The Odin Project curriculum.</p>
+            <ul class="list-disc list-inside text-sm mt-2 text-gray-600">
+              <li>CRUD posts and comments</li>
+              <li>Simple relations and feed</li>
+              <li>Test-driven features</li>
+            </ul>
+            <div class="mt-3 flex gap-2">
+              <a class="text-sm border px-3 py-1 rounded" href="#">Source on GitHub</a>
+              <a class="text-sm border px-3 py-1 rounded" href="#">Read docs</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="github-graph" class="my-16" data-reveal>
+        <h2 class="text-xl font-semibold mb-4">Recent GitHub Activity</h2>
+        <svg id="contribSVG" viewBox="0 0 540 120" class="w-full max-w-3xl h-32" aria-hidden="true"></svg>
+        <p class="text-sm mt-2 text-gray-500">Squares represent daily contributions.</p>
+      </section>
+
+      <section id="blog" class="my-12" data-reveal>
+        <h2 class="text-2xl font-semibold mb-3">Blog</h2>
+        <article class="prose">
+          <h3>What I learned from doing The Odin Project?</h3>
+          <p class="text-gray-600">Excerpt: The Odin Project taught me to value hands-on projects and testing. <a href="#blog-full" class="text-[color:var(--accent)]">Read more</a>.</p>
+        </article>
+      </section>
+
+      <section id="cv" class="my-12" data-reveal>
+        <h2 class="text-2xl font-semibold mb-3">CV</h2>
+        <p class="text-gray-600">Summary, skills, and experience (short narrative). Available on request.</p>
+      </section>
+
+      <section id="contact" class="my-12" data-reveal>
+        <h2 class="text-2xl font-semibold mb-3">Contact</h2>
+        <p class="text-gray-600">Email: <a href="mailto:you@example.com" class="text-[color:var(--accent)]">you@example.com</a></p>
+        <p class="mt-2"><a href="https://github.com/" class="text-[color:var(--accent)]">GitHub</a> · <a href="#" class="text-[color:var(--accent)]">LinkedIn</a></p>
+      </section>
+    </main>
+
+    <footer class="mt-12 py-6 border-t text-center text-sm text-gray-500">
+      <div class="max-w-4xl mx-auto">© Nathan Russell</div>
+    </footer>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>
