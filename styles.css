@@ -32,6 +32,11 @@
 .hero-intro{ max-width: 48rem; }
 .ring-ui{ box-shadow: 0 0 0 2px var(--ui); }
 
+/* Credibility chips */
+.chip{
+	display:inline-block; padding:6px 10px; border-radius:9999px; background:color-mix(in srgb,var(--ui) 60%, transparent); color:var(--text); font-size:0.9rem;
+}
+
 /* Header & nav styles */
 #siteHeader { border-color: var(--ui); }
 .nav-link{ padding:6px 8px; border-radius:6px; color:var(--text); text-decoration:none; }
