@@ -9,7 +9,7 @@
   <meta property="og:description" content="Full-stack developer focused on clarity, accessibility, and performance. Projects: ChatApp, OdinBook.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://USERNAME.github.io/">
-  <meta property="og:image" content="/assets/img/og-image.png">
+  <meta property="og:image" content="assets/img/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
     <title>Nathan Russell — Full-stack Developer</title>
 
@@ -28,7 +28,8 @@
       .reveal{ opacity:1 !important; transform:none !important; }
     </style>
 
-    <link rel="stylesheet" href="styles.css">
+  <link rel="preload" href="assets/img/headshot.webp" as="image">
+  <link rel="stylesheet" href="styles.css">
   </head>
   <body class="antialiased">
     <header id="siteHeader" class="sticky top-0 bg-[color:var(--bg)]/80 backdrop-blur z-40 border-b" role="banner">
@@ -53,12 +54,18 @@
     </header>
 
     <main class="max-w-4xl mx-auto px-4 py-8" id="main" role="main">
-      <section id="home" class="my-12" data-reveal>
-        <h1 class="text-3xl md:text-4xl font-bold mb-3">Hi — I build thoughtful, reliable web apps.</h1>
-  <p class="text-muted mb-6">Full-stack developer focused on clarity, accessibility, and performance. I build projects that ship.</p>
-        <div class="flex gap-3">
-          <a href="#projects" class="inline-block bg-[color:var(--accent)] text-white px-4 py-2 rounded">Projects</a>
-          <a href="https://github.com/" class="inline-block border px-4 py-2 rounded">GitHub</a>
+      <section id="home" class="my-12 flex items-center gap-6" data-reveal>
+        <div class="flex-1">
+          <h1 class="text-3xl md:text-4xl font-bold mb-3">Hi — I build thoughtful, reliable web apps.</h1>
+          <p class="text-muted mb-6">I help teams and founders turn ideas into accessible, well-tested web applications. I focus on clarity, performance, and code you can maintain.</p>
+          <p class="text-muted mb-4">Recent work: ChatApp (real-time collaboration) and OdinBook (social feed & testing).</p>
+          <div class="flex gap-3">
+            <a href="#projects" class="btn-accent px-4 py-2 rounded" aria-label="See projects">Projects</a>
+            <a href="https://github.com/" class="border px-4 py-2 rounded" aria-label="View GitHub profile" target="_blank" rel="noopener">GitHub</a>
+          </div>
+        </div>
+        <div class="w-28 h-28 rounded-full overflow-hidden ring-2 ring-[color:var(--ui)]">
+          <img src="assets/img/headshot.webp" alt="Headshot of Nathan Russell" width="112" height="112" loading="eager">
         </div>
       </section>
 

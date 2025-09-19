@@ -28,6 +28,10 @@
 .border-ui{ border-color: var(--ui); }
 .btn-accent{ background-color: var(--accent); color: white; }
 
+/* Hero tweaks */
+.hero-intro{ max-width: 48rem; }
+.ring-ui{ box-shadow: 0 0 0 2px var(--ui); }
+
 /* Header & nav styles */
 #siteHeader { border-color: var(--ui); }
 .nav-link{ padding:6px 8px; border-radius:6px; color:var(--text); text-decoration:none; }
