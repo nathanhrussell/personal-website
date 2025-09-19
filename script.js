@@ -74,4 +74,29 @@ document.addEventListener("DOMContentLoaded", ()=>{
     new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
     draw();
   })();
+
+  // Contrast check (basic, logs results)
+  function luminance(r,g,b){
+    const a = [r,g,b].map(v=>{
+      v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4);
+    });
+    return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];
+  }
+  function hexToRgb(hex){
+    const h = hex.replace('#','');
+    return [parseInt(h.substring(0,2),16), parseInt(h.substring(2,4),16), parseInt(h.substring(4,6),16)];
+  }
+  function contrast(hex1,hex2){
+    const L1 = luminance(...hexToRgb(hex1));
+    const L2 = luminance(...hexToRgb(hex2));
+    return (Math.max(L1,L2)+0.05)/(Math.min(L1,L2)+0.05);
+  }
+  try{
+    const style = getComputedStyle(document.documentElement);
+    const bg = style.getPropertyValue('--bg').trim() || '#ffffff';
+    const text = style.getPropertyValue('--text').trim() || '#111827';
+    const ratio = contrast(bg,text);
+    console.log('Contrast ratio (text vs bg):', ratio.toFixed(2));
+    console.log('WCAG AA (normal text) pass:', ratio>=4.5);
+  }catch(e){ console.warn('Contrast check failed', e); }
 });

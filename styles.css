@@ -5,3 +5,26 @@
 
 /* small responsive tweak for the SVG */
 #contribSVG{ height:128px; max-height:200px; }
+
+/* Theme variables */
+:root{
+	--bg: #ffffff;
+	--text: #111827;
+	--ui: #e5e7eb;
+	--accent: #3b82f6;
+	--secondary: #f59e0b;
+}
+[data-theme="dark"]{
+	--bg: #111827;
+	--text: #f9fafb;
+	--ui: #374151;
+	--accent: #60a5fa;
+	--secondary: #fbbf24;
+}
+
+/* Helpers */
+.text-muted{ color: color-mix(in srgb, var(--text) 60%, transparent); }
+.bg-ui{ background-color: var(--ui); }
+.border-ui{ border-color: var(--ui); }
+.btn-accent{ background-color: var(--accent); color: white; }
+
