@@ -28,3 +28,12 @@
 .border-ui{ border-color: var(--ui); }
 .btn-accent{ background-color: var(--accent); color: white; }
 
+/* Header & nav styles */
+#siteHeader { border-color: var(--ui); }
+.nav-link{ padding:6px 8px; border-radius:6px; color:var(--text); text-decoration:none; }
+.nav-link:hover, .nav-link:focus{ background-color: color-mix(in srgb, var(--ui) 60%, transparent); }
+.nav-link.active{ background-color: var(--accent); color: white; }
+
+/* Smooth scroll behavior */
+html { scroll-behavior: smooth; }
+

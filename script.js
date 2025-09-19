@@ -100,3 +100,42 @@ document.addEventListener("DOMContentLoaded", ()=>{
     console.log('WCAG AA (normal text) pass:', ratio>=4.5);
   }catch(e){ console.warn('Contrast check failed', e); }
 });
+
+// Smooth scroll with offset and active nav highlighting
+document.addEventListener('DOMContentLoaded', ()=>{
+  const header = document.getElementById('siteHeader');
+  const navLinks = Array.from(document.querySelectorAll('.nav-link'));
+  const sections = navLinks.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+
+  function headerHeight(){ return header ? header.getBoundingClientRect().height : 0; }
+
+  // Adjust scroll to account for header when clicking anchors
+  navLinks.forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      const href = a.getAttribute('href');
+      if(href && href.startsWith('#')){
+        const target = document.querySelector(href);
+        if(target){
+          e.preventDefault();
+          const y = target.getBoundingClientRect().top + window.scrollY - headerHeight() - 8;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }
+    });
+  });
+
+  // Observe sections to toggle active link
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(ent=>{
+      const id = ent.target.id;
+      const link = document.querySelector(`.nav-link[href="#${id}"]`);
+      if(!link) return;
+      if(ent.isIntersecting){
+        navLinks.forEach(l=>l.classList.remove('active'));
+        link.classList.add('active');
+      }
+    });
+  }, { rootMargin: `-${headerHeight()}px 0px -40% 0px`, threshold: 0.2 });
+
+  sections.forEach(s=>obs.observe(s));
+});
