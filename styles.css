@@ -37,6 +37,22 @@
 	display:inline-block; padding:6px 10px; border-radius:9999px; background:color-mix(in srgb,var(--ui) 60%, transparent); color:var(--text); font-size:0.9rem;
 }
 
+/* Project mockup carousel (CSS-only hover swap) */
+.project-card .mockup{ position:relative; width:100%; padding-top:56%; background:var(--ui); border-radius:8px; overflow:hidden; }
+.project-card .mockup img{ position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; transition:opacity .35s ease, transform .35s ease; }
+.project-card .mockup img:nth-child(1){ opacity:1; transform:scale(1); }
+.project-card .mockup img:nth-child(2){ opacity:0; transform:scale(.98); }
+.project-card:hover .mockup img:nth-child(1){ opacity:0; transform:scale(.98); }
+.project-card:hover .mockup img:nth-child(2){ opacity:1; transform:scale(1); }
+
+.project-card{ display:flex; flex-direction:column; }
+
+/* Mockup affordance: pointer, focus styles, and small hint badge */
+.mockup{ cursor:pointer; }
+.mockup:focus{ outline: 3px solid color-mix(in srgb, var(--accent) 60%, white); outline-offset: 4px; }
+.mockup-hint{ position:absolute; top:8px; left:8px; background:rgba(0,0,0,0.6); color:white; font-size:0.75rem; padding:6px 8px; border-radius:6px; backdrop-filter: blur(4px); }
+.dark .mockup-hint{ background: rgba(255,255,255,0.08); color: var(--text); }
+
 /* Header & nav styles */
 #siteHeader { border-color: var(--ui); }
 .nav-link{ padding:6px 8px; border-radius:6px; color:var(--text); text-decoration:none; }

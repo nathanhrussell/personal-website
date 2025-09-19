@@ -139,3 +139,36 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   sections.forEach(s=>obs.observe(s));
 });
+
+  // Mockup interactivity: click/tap to cycle images, keyboard support for accessibility
+  document.addEventListener('DOMContentLoaded', ()=>{
+    function showIndex(container, index){
+      const imgs = Array.from(container.querySelectorAll('img'));
+      imgs.forEach((img,i)=>{
+        img.style.opacity = i===index ? '1' : '0';
+        img.style.transform = i===index ? 'scale(1)' : 'scale(.98)';
+      });
+      container.setAttribute('data-mockup-index', String(index));
+    }
+
+    document.querySelectorAll('.mockup').forEach(container=>{
+      // ensure initial state
+      showIndex(container, Number(container.getAttribute('data-mockup-index')||0));
+
+      // click or tap cycles images
+      container.addEventListener('click', ()=>{
+        const imgs = container.querySelectorAll('img');
+        if(imgs.length<2) return;
+        const idx = (Number(container.getAttribute('data-mockup-index')||0) + 1) % imgs.length;
+        showIndex(container, idx);
+      });
+
+      // keyboard: Enter or Space toggles
+      container.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          container.click();
+        }
+      });
+    });
+  });
