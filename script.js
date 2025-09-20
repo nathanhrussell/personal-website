@@ -49,43 +49,32 @@ document.addEventListener("DOMContentLoaded", ()=>{
     const palette = ()=> document.documentElement.getAttribute('data-theme') === 'dark' ? dark : light;
 
     let rects = [];
-    // contribGrid: optional 2D array [col][row] with numeric counts
-    let contribGrid = null;
+    let contribGrid = null; // 2D array [col][row]
 
-    // helpers: parse GraphQL calendar object (weeks -> contributionDays)
     function parseGraphQLCalendar(cal){
-      // expects cal.weeks -> array of weeks; each week.contributionDays -> {date, contributionCount, weekday}
       const grid = Array.from({length: cols}, ()=> Array.from({length: rows}, ()=> 0));
       if(!cal || !Array.isArray(cal.weeks)) return grid;
       cal.weeks.forEach((week, wi)=>{
-        if(wi>=cols) return; // ignore extra weeks
+        if(wi>=cols) return;
         week.contributionDays.forEach(day=>{
-          // GraphQL weekday: 0=Sunday, 1=Monday, ... 6=Saturday
-          // user requested weeks start on Monday -> map Monday->row 0 ... Sunday->row 6
           const gweekday = (typeof day.weekday === 'number') ? day.weekday : (new Date(day.date).getDay());
-          const row = (gweekday + 6) % 7; // Monday=1 -> 0, Sunday=0 -> 6
+          const row = (gweekday + 6) % 7; // Monday -> 0, Sunday -> 6
           grid[wi][row] = day.contributionCount || 0;
         });
       });
       return grid;
     }
 
-    // helper: parse per-day list [{date,count}] into grid with weeks starting Monday and including today
     function parsePerDayList(list){
-      // build a map date -> count
       const map = new Map();
-      list.forEach(d=> map.set(d.date, Number(d.count ?? d.contributionCount ?? d.count ?? 0)));
-      // compute the Monday-starting start date for the 53-week grid that ends today
+      list.forEach(d=> map.set(d.date, Number(d.count ?? d.contributionCount ?? 0)));
       const today = new Date();
-      // ensure we use user's requested today: include today's date (UTC iso)
       const end = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
-      // find Monday of the week that contains the start of the 53-week window
       const totalDays = cols * rows; // 371
       const startDate = new Date(end);
       startDate.setUTCDate(end.getUTCDate() - (totalDays - 1));
-      // Align startDate to the Monday of its week
-      const weekday = startDate.getUTCDay(); // 0=Sunday
-      const shift = (weekday === 0) ? -6 : (1 - weekday); // move to Monday
+      const weekday = startDate.getUTCDay();
+      const shift = (weekday === 0) ? -6 : (1 - weekday);
       startDate.setUTCDate(startDate.getUTCDate() + shift);
 
       const grid = Array.from({length: cols}, ()=> Array.from({length: rows}, ()=> 0));
@@ -100,27 +89,15 @@ document.addEventListener("DOMContentLoaded", ()=>{
       return grid;
     }
 
-    // Map numeric counts to bucket 0..4 using percentile thresholds on non-zero counts
+    // Fixed thresholds tuned for personal contributions
     function countsToBuckets(grid){
-      const flat = [];
-      grid.forEach(col=> col.forEach(v=> flat.push(Number(v||0))));
-      const nonZero = flat.filter(v=>v>0).sort((a,b)=>a-b);
-      if(nonZero.length===0){
-        return grid.map(col=> col.map(()=>0));
-      }
-      function percentile(arr,p){
-        const idx = Math.floor(p*(arr.length-1));
-        return arr[Math.max(0, Math.min(arr.length-1, idx))];
-      }
-      const t1 = percentile(nonZero, 0.20);
-      const t2 = percentile(nonZero, 0.50);
-      const t3 = percentile(nonZero, 0.80);
+      const t = {b1:2, b2:5, b3:15};
       return grid.map(col => col.map(v=>{
         const n = Number(v||0);
-        if(n===0) return 0;
-        if(n <= t1) return 1;
-        if(n <= t2) return 2;
-        if(n <= t3) return 3;
+        if(n === 0) return 0;
+        if(n <= t.b1) return 1;
+        if(n <= t.b2) return 2;
+        if(n <= t.b3) return 3;
         return 4;
       }));
     }
@@ -137,7 +114,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
           rect.setAttribute('width', String(size));
           rect.setAttribute('height', String(size));
           rect.setAttribute('rx','2');
-          // pick fill: if gridBuckets provided, use it, otherwise random
           let fill;
           if(Array.isArray(gridBuckets) && gridBuckets[c] && typeof gridBuckets[c][r] !== 'undefined'){
             const idx = gridBuckets[c][r];
@@ -170,7 +146,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
       });
     }
 
-    // Intersection observer for first-view animation
     const io = new IntersectionObserver((entries, obs)=>{
       entries.forEach(ent=>{
         if(ent.isIntersecting){
@@ -180,42 +155,89 @@ document.addEventListener("DOMContentLoaded", ()=>{
       });
     }, { threshold: 0.12 });
 
-    // When theme changes, redraw using the same contributed buckets if available
+    // legend and total rendering
+    function renderLegend(total){
+      const section = document.getElementById('github-graph');
+      if(!section) return;
+      let legend = document.getElementById('contribLegend');
+      const p = palette();
+      if(!legend){
+        legend = document.createElement('div');
+        legend.id = 'contribLegend';
+        legend.className = 'mt-3 text-sm flex items-center gap-3';
+        legend.setAttribute('aria-label','Contribution legend');
+        const swatchWrap = document.createElement('div');
+        swatchWrap.className = 'flex items-center gap-2';
+        const labels = ['0','1–2','3–5','6–15','16+'];
+        for(let i=0;i<p.length;i++){
+          const item = document.createElement('div');
+          item.className = 'flex items-center gap-2';
+          const sw = document.createElement('span');
+          sw.setAttribute('role','img');
+          sw.setAttribute('aria-hidden','true');
+          sw.style.display = 'inline-block';
+          sw.style.width = '14px';
+          sw.style.height = '14px';
+          sw.style.borderRadius = '3px';
+          sw.style.background = p[i];
+          item.appendChild(sw);
+          const tlabel = document.createElement('span');
+          tlabel.textContent = labels[i];
+          tlabel.className = 'text-muted';
+          item.appendChild(tlabel);
+          swatchWrap.appendChild(item);
+        }
+        legend.appendChild(swatchWrap);
+        const totalEl = document.createElement('div');
+        totalEl.id = 'contribTotal';
+        totalEl.className = 'text-muted ml-4';
+        legend.appendChild(totalEl);
+        section.appendChild(legend);
+      }
+      const swatches = legend.querySelectorAll('span[aria-hidden="true"]');
+      swatches.forEach((sw,i)=>{ sw.style.background = p[i]; });
+      const totalEl = document.getElementById('contribTotal');
+      if(totalEl) totalEl.textContent = `Total: ${Number(total||0).toLocaleString()}`;
+    }
+
+    // redraw on theme change
     new MutationObserver(()=>{
       const pgrid = contribGrid ? countsToBuckets(contribGrid) : null;
       draw(pgrid);
+      renderLegend((window.__contribData && window.__contribData.totalContributions) || null);
       io.observe(svg);
     }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-    // Try to load public contrib.json (GitHub Actions can produce this at /contrib.json or /public/contrib.json)
+    // load data
     Promise.any([
       fetch('/contrib.json').then(r=>r.ok? r.json() : Promise.reject()).catch(()=>Promise.reject()),
       fetch('/public/contrib.json').then(r=>r.ok? r.json() : Promise.reject()).catch(()=>Promise.reject())
     ]).then(data=>{
-      // data may be the contributionCalendar object or the calendar itself
-      if(data && data.weeks) {
+      if(data && data.weeks){
         contribGrid = parseGraphQLCalendar(data);
+        window.__contribData = data;
       } else if(data && Array.isArray(data.weeks)){
         contribGrid = parseGraphQLCalendar({weeks: data.weeks});
+        window.__contribData = { totalContributions: data.totalContributions || null };
       } else if(Array.isArray(data)){
-        // assume per-day list
         contribGrid = parsePerDayList(data);
+        window.__contribData = { totalContributions: null };
       }
       const pgrid = contribGrid ? countsToBuckets(contribGrid) : null;
       draw(pgrid);
+      renderLegend((data && data.totalContributions) || (window.__contribData && window.__contribData.totalContributions) || null);
       io.observe(svg);
     }).catch(()=>{
-      // fallback: random demo
       draw(null);
+      renderLegend(null);
       io.observe(svg);
     });
+
   })();
 
   // Contrast check (basic, logs results)
   function luminance(r,g,b){
-    const a = [r,g,b].map(v=>{
-      v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4);
-    });
+    const a = [r,g,b].map(v=>{ v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4); });
     return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];
   }
   function hexToRgb(hex){
@@ -235,6 +257,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
     console.log('Contrast ratio (text vs bg):', ratio.toFixed(2));
     console.log('WCAG AA (normal text) pass:', ratio>=4.5);
   }catch(e){ console.warn('Contrast check failed', e); }
+
 });
 
 // Smooth scroll with offset and active nav highlighting
@@ -276,31 +299,27 @@ document.addEventListener('DOMContentLoaded', ()=>{
   sections.forEach(s=>obs.observe(s));
 });
 
-  // Mockup interactivity: click/tap to cycle images, keyboard support for accessibility
-  document.addEventListener('DOMContentLoaded', ()=>{
-    function showIndex(container, index){
-    // Only set the active index as a data attribute. Visual state is handled by CSS
+// Mockup interactivity: click/tap to cycle images, keyboard support for accessibility
+document.addEventListener('DOMContentLoaded', ()=>{
+  function showIndex(container, index){
     container.setAttribute('data-mockup-index', String(index));
   }
 
-    document.querySelectorAll('.mockup').forEach(container=>{
-      // ensure initial state
+  document.querySelectorAll('.mockup').forEach(container=>{
     showIndex(container, Number(container.getAttribute('data-mockup-index')||0));
 
-      // click or tap cycles images
-      container.addEventListener('click', ()=>{
-        const imgs = container.querySelectorAll(':scope > img');
-        if(imgs.length<2) return;
-        const idx = (Number(container.getAttribute('data-mockup-index')||0) + 1) % imgs.length;
-        showIndex(container, idx);
-      });
+    container.addEventListener('click', ()=>{
+      const imgs = container.querySelectorAll(':scope > img');
+      if(imgs.length<2) return;
+      const idx = (Number(container.getAttribute('data-mockup-index')||0) + 1) % imgs.length;
+      showIndex(container, idx);
+    });
 
-      // keyboard: Enter or Space toggles
-      container.addEventListener('keydown', (e)=>{
-        if(e.key === 'Enter' || e.key === ' '){
-          e.preventDefault();
-          container.click();
-        }
-      });
+    container.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        container.click();
+      }
     });
   });
+});
