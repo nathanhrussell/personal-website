@@ -143,14 +143,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // Mockup interactivity: click/tap to cycle images, keyboard support for accessibility
   document.addEventListener('DOMContentLoaded', ()=>{
     function showIndex(container, index){
-    // select only direct child images to avoid picking up hint elements placed nearby
-    const imgs = Array.from(container.querySelectorAll(':scope > img'));
-      imgs.forEach((img,i)=>{
-        img.style.opacity = i===index ? '1' : '0';
-        img.style.transform = i===index ? 'scale(1)' : 'scale(.98)';
-      });
-      container.setAttribute('data-mockup-index', String(index));
-    }
+    // Only set the active index as a data attribute. Visual state is handled by CSS
+    container.setAttribute('data-mockup-index', String(index));
+  }
 
     document.querySelectorAll('.mockup').forEach(container=>{
       // ensure initial state
