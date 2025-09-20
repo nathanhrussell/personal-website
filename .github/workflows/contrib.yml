@@ -1,0 +1,38 @@
+name: Update contrib.json
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # daily at 03:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch contribution calendar
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LOGIN: nathanhrussell
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq
+          QUERY='query($login:String!){ user(login:$login){ contributionsCollection{ contributionCalendar{ totalContributions colors weeks{ contributionDays{ date contributionCount color weekday } } } } } }'
+          curl -s -H "Authorization: bearer $GH_TOKEN" \
+               -H "Content-Type: application/json" \
+               -d "{\"query\":\"$QUERY\",\"variables\":{\"login\":\"$LOGIN\"}}" \
+               https://api.github.com/graphql \
+            | jq '.data.user.contributionsCollection.contributionCalendar' \
+            > contrib.json
+
+      - name: Commit JSON
+        run: |
+          mkdir -p public
+          mv contrib.json public/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/contrib.json
+          git commit -m "Update contrib.json" || echo "No changes"
+          git push

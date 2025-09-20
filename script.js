@@ -49,22 +49,104 @@ document.addEventListener("DOMContentLoaded", ()=>{
     const palette = ()=> document.documentElement.getAttribute('data-theme') === 'dark' ? dark : light;
 
     let rects = [];
+    // contribGrid: optional 2D array [col][row] with numeric counts
+    let contribGrid = null;
 
-    function draw(){
+    // helpers: parse GraphQL calendar object (weeks -> contributionDays)
+    function parseGraphQLCalendar(cal){
+      // expects cal.weeks -> array of weeks; each week.contributionDays -> {date, contributionCount, weekday}
+      const grid = Array.from({length: cols}, ()=> Array.from({length: rows}, ()=> 0));
+      if(!cal || !Array.isArray(cal.weeks)) return grid;
+      cal.weeks.forEach((week, wi)=>{
+        if(wi>=cols) return; // ignore extra weeks
+        week.contributionDays.forEach(day=>{
+          // GraphQL weekday: 0=Sunday, 1=Monday, ... 6=Saturday
+          // user requested weeks start on Monday -> map Monday->row 0 ... Sunday->row 6
+          const gweekday = (typeof day.weekday === 'number') ? day.weekday : (new Date(day.date).getDay());
+          const row = (gweekday + 6) % 7; // Monday=1 -> 0, Sunday=0 -> 6
+          grid[wi][row] = day.contributionCount || 0;
+        });
+      });
+      return grid;
+    }
+
+    // helper: parse per-day list [{date,count}] into grid with weeks starting Monday and including today
+    function parsePerDayList(list){
+      // build a map date -> count
+      const map = new Map();
+      list.forEach(d=> map.set(d.date, Number(d.count ?? d.contributionCount ?? d.count ?? 0)));
+      // compute the Monday-starting start date for the 53-week grid that ends today
+      const today = new Date();
+      // ensure we use user's requested today: include today's date (UTC iso)
+      const end = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+      // find Monday of the week that contains the start of the 53-week window
+      const totalDays = cols * rows; // 371
+      const startDate = new Date(end);
+      startDate.setUTCDate(end.getUTCDate() - (totalDays - 1));
+      // Align startDate to the Monday of its week
+      const weekday = startDate.getUTCDay(); // 0=Sunday
+      const shift = (weekday === 0) ? -6 : (1 - weekday); // move to Monday
+      startDate.setUTCDate(startDate.getUTCDate() + shift);
+
+      const grid = Array.from({length: cols}, ()=> Array.from({length: rows}, ()=> 0));
+      for(let c=0;c<cols;c++){
+        for(let r=0;r<rows;r++){
+          const d = new Date(startDate);
+          d.setUTCDate(startDate.getUTCDate() + (c*7 + r));
+          const iso = d.toISOString().slice(0,10);
+          grid[c][r] = Number(map.get(iso) || 0);
+        }
+      }
+      return grid;
+    }
+
+    // Map numeric counts to bucket 0..4 using percentile thresholds on non-zero counts
+    function countsToBuckets(grid){
+      const flat = [];
+      grid.forEach(col=> col.forEach(v=> flat.push(Number(v||0))));
+      const nonZero = flat.filter(v=>v>0).sort((a,b)=>a-b);
+      if(nonZero.length===0){
+        return grid.map(col=> col.map(()=>0));
+      }
+      function percentile(arr,p){
+        const idx = Math.floor(p*(arr.length-1));
+        return arr[Math.max(0, Math.min(arr.length-1, idx))];
+      }
+      const t1 = percentile(nonZero, 0.20);
+      const t2 = percentile(nonZero, 0.50);
+      const t3 = percentile(nonZero, 0.80);
+      return grid.map(col => col.map(v=>{
+        const n = Number(v||0);
+        if(n===0) return 0;
+        if(n <= t1) return 1;
+        if(n <= t2) return 2;
+        if(n <= t3) return 3;
+        return 4;
+      }));
+    }
+
+    function draw(gridBuckets){
       svg.innerHTML = '';
       rects = [];
       const p = palette();
       for(let c=0;c<cols;c++){
         for(let r=0;r<rows;r++){
-          const lvl = Math.floor(Math.random()*p.length);
           const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
           rect.setAttribute('x', String(c*(size+gap)));
           rect.setAttribute('y', String(r*(size+gap)));
           rect.setAttribute('width', String(size));
           rect.setAttribute('height', String(size));
           rect.setAttribute('rx','2');
-          rect.setAttribute('fill', p[lvl]);
-          // start hidden and slightly scaled down
+          // pick fill: if gridBuckets provided, use it, otherwise random
+          let fill;
+          if(Array.isArray(gridBuckets) && gridBuckets[c] && typeof gridBuckets[c][r] !== 'undefined'){
+            const idx = gridBuckets[c][r];
+            fill = p[Math.max(0, Math.min(p.length-1, idx))];
+          } else {
+            const lvl = Math.floor(Math.random()*p.length);
+            fill = p[lvl];
+          }
+          rect.setAttribute('fill', fill);
           rect.style.opacity = '0';
           rect.style.transform = 'scale(.98)';
           rect.style.transformOrigin = 'center';
@@ -72,7 +154,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
           rects.push(rect);
         }
       }
-      // size the svg viewBox to fit grid
       const width = cols * (size + gap) - gap;
       const height = rows * (size + gap) - gap;
       svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
@@ -89,7 +170,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
       });
     }
 
-    // Observe the svg element and animate once when it first becomes visible
+    // Intersection observer for first-view animation
     const io = new IntersectionObserver((entries, obs)=>{
       entries.forEach(ent=>{
         if(ent.isIntersecting){
@@ -99,16 +180,35 @@ document.addEventListener("DOMContentLoaded", ()=>{
       });
     }, { threshold: 0.12 });
 
-    // When theme changes, redraw the grid (so colours update) and re-observe for animation
+    // When theme changes, redraw using the same contributed buckets if available
     new MutationObserver(()=>{
-      draw();
-      // re-observe so animation can run again if the element hasn't been seen
+      const pgrid = contribGrid ? countsToBuckets(contribGrid) : null;
+      draw(pgrid);
       io.observe(svg);
     }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-    draw();
-    // start observing — if already in view, the callback will run immediately
-    io.observe(svg);
+    // Try to load public contrib.json (GitHub Actions can produce this at /contrib.json or /public/contrib.json)
+    Promise.any([
+      fetch('/contrib.json').then(r=>r.ok? r.json() : Promise.reject()).catch(()=>Promise.reject()),
+      fetch('/public/contrib.json').then(r=>r.ok? r.json() : Promise.reject()).catch(()=>Promise.reject())
+    ]).then(data=>{
+      // data may be the contributionCalendar object or the calendar itself
+      if(data && data.weeks) {
+        contribGrid = parseGraphQLCalendar(data);
+      } else if(data && Array.isArray(data.weeks)){
+        contribGrid = parseGraphQLCalendar({weeks: data.weeks});
+      } else if(Array.isArray(data)){
+        // assume per-day list
+        contribGrid = parsePerDayList(data);
+      }
+      const pgrid = contribGrid ? countsToBuckets(contribGrid) : null;
+      draw(pgrid);
+      io.observe(svg);
+    }).catch(()=>{
+      // fallback: random demo
+      draw(null);
+      io.observe(svg);
+    });
   })();
 
   // Contrast check (basic, logs results)
