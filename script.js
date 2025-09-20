@@ -40,16 +40,19 @@ document.addEventListener("DOMContentLoaded", ()=>{
     observer.observe(el);
   });
 
-  // Contribution graph
+  // Contribution graph — draw 53x7 grid and animate on first intersection. Theme-aware palette and redraw on theme change.
   (function makeContribGrid(){
     const svg = document.getElementById('contribSVG'); if(!svg) return;
-    const cols=53, rows=7, size=10, gap=2;
-    const light=["#ebedf0","#9be9a8","#40c463","#30a14e","#216e39"];
-    const dark =["#161b22","#0e4429","#006d32","#26a641","#39d353"];
-    const palette=()=> document.documentElement.getAttribute('data-theme')==='dark' ? dark : light;
+    const cols = 53, rows = 7, size = 10, gap = 2;
+    const light = ["#ebedf0","#9be9a8","#40c463","#30a14e","#216e39"];
+    const dark  = ["#161b22","#0e4429","#006d32","#26a641","#39d353"];
+    const palette = ()=> document.documentElement.getAttribute('data-theme') === 'dark' ? dark : light;
+
+    let rects = [];
 
     function draw(){
       svg.innerHTML = '';
+      rects = [];
       const p = palette();
       for(let c=0;c<cols;c++){
         for(let r=0;r<rows;r++){
@@ -61,18 +64,51 @@ document.addEventListener("DOMContentLoaded", ()=>{
           rect.setAttribute('height', String(size));
           rect.setAttribute('rx','2');
           rect.setAttribute('fill', p[lvl]);
-          rect.style.opacity='0'; rect.style.transformOrigin='center';
+          // start hidden and slightly scaled down
+          rect.style.opacity = '0';
+          rect.style.transform = 'scale(.98)';
+          rect.style.transformOrigin = 'center';
           svg.appendChild(rect);
-          setTimeout(()=>{
-            rect.style.transition='opacity .4s ease, transform .4s ease';
-            rect.style.opacity='1'; rect.style.transform='scale(1)';
-          }, (c*30)+(r*10));
+          rects.push(rect);
         }
       }
+      // size the svg viewBox to fit grid
+      const width = cols * (size + gap) - gap;
+      const height = rows * (size + gap) - gap;
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
     }
 
-    new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+    function animate(){
+      if(!rects.length) return;
+      rects.forEach((rect, i)=>{
+        setTimeout(()=>{
+          rect.style.transition = 'opacity .35s ease, transform .35s ease';
+          rect.style.opacity = '1';
+          rect.style.transform = 'scale(1)';
+        }, i * 20);
+      });
+    }
+
+    // Observe the svg element and animate once when it first becomes visible
+    const io = new IntersectionObserver((entries, obs)=>{
+      entries.forEach(ent=>{
+        if(ent.isIntersecting){
+          animate();
+          obs.unobserve(ent.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    // When theme changes, redraw the grid (so colours update) and re-observe for animation
+    new MutationObserver(()=>{
+      draw();
+      // re-observe so animation can run again if the element hasn't been seen
+      io.observe(svg);
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
     draw();
+    // start observing — if already in view, the callback will run immediately
+    io.observe(svg);
   })();
 
   // Contrast check (basic, logs results)
