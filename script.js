@@ -1,4 +1,4 @@
-// script.js — theme toggle, reveal on scroll, and contrib graph
+// script.js — theme toggle, reveal on scroll, and contrib graph (with labels)
 const root = document.documentElement;
 const storageKey = "theme";
 const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -44,25 +44,30 @@ document.addEventListener("DOMContentLoaded", ()=>{
   (function makeContribGrid(){
     const svg = document.getElementById('contribSVG'); if(!svg) return;
     const cols = 53, rows = 7, size = 10, gap = 2;
+    const labelLeft = 28; // space for weekday labels
+    const labelTop = 18;  // space for month labels
     const light = ["#ebedf0","#9be9a8","#40c463","#30a14e","#216e39"];
     const dark  = ["#161b22","#0e4429","#006d32","#26a641","#39d353"];
     const palette = ()=> document.documentElement.getAttribute('data-theme') === 'dark' ? dark : light;
 
     let rects = [];
     let contribGrid = null; // 2D array [col][row]
+    let dateGrid = null; // 2D array same shape with ISO dates
 
     function parseGraphQLCalendar(cal){
       const grid = Array.from({length: cols}, ()=> Array.from({length: rows}, ()=> 0));
-      if(!cal || !Array.isArray(cal.weeks)) return grid;
+      const dates = Array.from({length: cols}, ()=> Array.from({length: rows}, ()=> null));
+      if(!cal || !Array.isArray(cal.weeks)) return {grid, dates};
       cal.weeks.forEach((week, wi)=>{
         if(wi>=cols) return;
         week.contributionDays.forEach(day=>{
           const gweekday = (typeof day.weekday === 'number') ? day.weekday : (new Date(day.date).getDay());
           const row = (gweekday + 6) % 7; // Monday -> 0, Sunday -> 6
           grid[wi][row] = day.contributionCount || 0;
+          dates[wi][row] = day.date;
         });
       });
-      return grid;
+      return {grid, dates};
     }
 
     function parsePerDayList(list){
@@ -78,15 +83,17 @@ document.addEventListener("DOMContentLoaded", ()=>{
       startDate.setUTCDate(startDate.getUTCDate() + shift);
 
       const grid = Array.from({length: cols}, ()=> Array.from({length: rows}, ()=> 0));
+      const dates = Array.from({length: cols}, ()=> Array.from({length: rows}, ()=> null));
       for(let c=0;c<cols;c++){
         for(let r=0;r<rows;r++){
           const d = new Date(startDate);
           d.setUTCDate(startDate.getUTCDate() + (c*7 + r));
           const iso = d.toISOString().slice(0,10);
           grid[c][r] = Number(map.get(iso) || 0);
+          dates[c][r] = iso;
         }
       }
-      return grid;
+      return {grid, dates};
     }
 
     // Fixed thresholds tuned for personal contributions
@@ -102,15 +109,62 @@ document.addEventListener("DOMContentLoaded", ()=>{
       }));
     }
 
+    function monthLabelsFromDates(dates){
+      const months = new Map();
+      for(let c=0;c<cols;c++){
+        for(let r=0;r<rows;r++){
+          const d = dates[c] && dates[c][r];
+          if(!d) continue;
+          const dt = new Date(d + 'T00:00:00Z');
+          const key = `${dt.getUTCFullYear()}-${dt.getUTCMonth()}`;
+          if(!months.has(key)) months.set(key, {col: c, date: dt});
+        }
+      }
+      return Array.from(months.values()).sort((a,b)=> a.col - b.col);
+    }
+
     function draw(gridBuckets){
       svg.innerHTML = '';
       rects = [];
       const p = palette();
+      const width = labelLeft + cols * (size + gap) - gap;
+      const height = labelTop + rows * (size + gap) - gap;
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+      // month labels
+      if(dateGrid){
+        const months = monthLabelsFromDates(dateGrid);
+        months.forEach(m=>{
+          const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+          text.setAttribute('x', String(labelLeft + m.col*(size+gap)));
+          text.setAttribute('y', String(12));
+          text.setAttribute('font-size', '10');
+          text.setAttribute('fill', 'currentColor');
+          text.textContent = m.date.toLocaleString(undefined, { month: 'short' });
+          svg.appendChild(text);
+        });
+      }
+
+      // weekday labels (left)
+      const weekdays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      for(let r=0;r<rows;r++){
+        if(r % 2 !== 0) continue; // show Mon, Wed, Fri only for compactness
+        const y = labelTop + r*(size+gap) + (size/2) + 3;
+        const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+        text.setAttribute('x', String(2));
+        text.setAttribute('y', String(y));
+        text.setAttribute('font-size', '10');
+        text.setAttribute('fill', 'currentColor');
+        text.textContent = weekdays[r];
+        svg.appendChild(text);
+      }
+
+      // squares
       for(let c=0;c<cols;c++){
         for(let r=0;r<rows;r++){
           const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
-          rect.setAttribute('x', String(c*(size+gap)));
-          rect.setAttribute('y', String(r*(size+gap)));
+          rect.setAttribute('x', String(labelLeft + c*(size+gap)));
+          rect.setAttribute('y', String(labelTop + r*(size+gap)));
           rect.setAttribute('width', String(size));
           rect.setAttribute('height', String(size));
           rect.setAttribute('rx','2');
@@ -126,13 +180,16 @@ document.addEventListener("DOMContentLoaded", ()=>{
           rect.style.opacity = '0';
           rect.style.transform = 'scale(.98)';
           rect.style.transformOrigin = 'center';
+          // add accessible title/desc
+          const title = document.createElementNS('http://www.w3.org/2000/svg','title');
+          const date = dateGrid && dateGrid[c] ? dateGrid[c][r] : null;
+          title.textContent = `${date || ''}: ${ (Array.isArray(gridBuckets) && gridBuckets[c]) ? (gridBuckets[c][r] || 0) : '0'} contributions`;
+          rect.appendChild(title);
+
           svg.appendChild(rect);
           rects.push(rect);
         }
       }
-      const width = cols * (size + gap) - gap;
-      const height = rows * (size + gap) - gap;
-      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
     }
 
     function animate(){
@@ -142,7 +199,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
           rect.style.transition = 'opacity .35s ease, transform .35s ease';
           rect.style.opacity = '1';
           rect.style.transform = 'scale(1)';
-        }, i * 20);
+        }, i * 12);
       });
     }
 
@@ -169,7 +226,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
         const swatchWrap = document.createElement('div');
         swatchWrap.className = 'flex items-center gap-2';
         const labels = ['0','1–2','3–5','6–15','16+'];
-        for(let i=0;i<p.length;i++){
+        for(let i=0;i<p.length;i++){out 
           const item = document.createElement('div');
           item.className = 'flex items-center gap-2';
           const sw = document.createElement('span');
@@ -213,16 +270,16 @@ document.addEventListener("DOMContentLoaded", ()=>{
       fetch('/contrib.json').then(r=>r.ok? r.json() : Promise.reject()).catch(()=>Promise.reject()),
       fetch('/public/contrib.json').then(r=>r.ok? r.json() : Promise.reject()).catch(()=>Promise.reject())
     ]).then(data=>{
+      let parsed = {grid: null, dates: null};
       if(data && data.weeks){
-        contribGrid = parseGraphQLCalendar(data);
+        parsed = parseGraphQLCalendar(data);
         window.__contribData = data;
-      } else if(data && Array.isArray(data.weeks)){
-        contribGrid = parseGraphQLCalendar({weeks: data.weeks});
-        window.__contribData = { totalContributions: data.totalContributions || null };
       } else if(Array.isArray(data)){
-        contribGrid = parsePerDayList(data);
+        parsed = parsePerDayList(data);
         window.__contribData = { totalContributions: null };
       }
+      contribGrid = parsed.grid;
+      dateGrid = parsed.dates;
       const pgrid = contribGrid ? countsToBuckets(contribGrid) : null;
       draw(pgrid);
       renderLegend((data && data.totalContributions) || (window.__contribData && window.__contribData.totalContributions) || null);
