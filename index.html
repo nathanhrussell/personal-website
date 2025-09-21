@@ -144,10 +144,32 @@
 
       <section id="blog" class="my-12" data-reveal>
         <h2 class="text-2xl font-semibold mb-3">Blog</h2>
-        <article class="prose">
+        <article class="prose" data-reveal>
           <h3>What I learned from doing The Odin Project?</h3>
-          <p class="text-muted">Excerpt: The Odin Project taught me to value hands-on projects and testing. <a href="#blog-full" class="text-[color:var(--accent)]">Read more</a>.</p>
+          <p class="text-muted">Excerpt: The Odin Project taught me to value hands-on projects and testing. <a href="#blog-full" id="readMore" class="text-[color:var(--accent)]">Read more</a>.</p>
         </article>
+      </section>
+
+      <!-- Full post hidden by default; revealed when user clicks Read more -->
+      <section id="blog-full" class="my-12 hidden" aria-hidden="true" data-reveal>
+        <div class="prose">
+          <h2 class="text-2xl font-semibold mb-3">What I learned from doing The Odin Project?</h2>
+          <p>When I first started The Odin Project, I thought I knew what to expect. I already had some background in front end basics like HTML, CSS and a touch of JavaScript, so the opening lessons felt familiar. It was reassuring to breeze through the first few tasks, as it gave me the sense that I was starting from a position of strength. What I did not realise at the time was how quickly the course would move from comfortable ground into far more demanding territory. That shift became the heart of my learning journey.</p>
+
+          <p>The gradual increase in difficulty is one of the things I value most about the programme. It is structured in a way that constantly pushes you just beyond what feels manageable, which is exactly where real growth happens. At first it was about styling pages and tinkering with layouts, but soon I was building more complex applications, working with back end concepts and thinking like a developer rather than someone copying tutorials. Perseverance became essential. There were plenty of evenings when I stared at a screen full of errors wondering if I had reached my limit, but each time I pressed on I came away stronger for it.</p>
+
+          <p>One of the biggest lessons was the importance of small wins. The Odin Project is designed around steady, incremental progress, and that rhythm gave me a real sense of achievement. Completing a lesson or fixing a bug might not seem like much, yet those moments added up. They created momentum, and that momentum carried me through the tougher stretches. I learned that celebrating small victories is not just motivational fluff but a crucial part of staying committed over the long term.</p>
+
+          <p>Debugging, something that once felt like an annoying chore, turned into one of my favourite parts of coding. The course taught me to see bugs not as failures but as puzzles. Each error message was a clue and each misbehaving function an opportunity to sharpen my skills. By learning to debug properly I developed the ability to break down problems, isolate the cause and test potential fixes systematically. That mindset has spilled over into other parts of life too. I now approach challenges with more structure and less panic, confident that a solution exists if I keep at it.</p>
+
+          <p>Another major takeaway was patience. There were times when nothing seemed to work, no matter how long I stared at the code. In those moments, The Odin Project showed me the value of stepping back. Sometimes the best thing to do is to let a problem sit for a while and return with fresh eyes. More often than not, the answer became clear after a short break or even the next day. Patience and perspective turned out to be as important as technical knowledge.</p>
+
+          <p>Beyond the technical skills, I discovered the discipline required to be a self-directed learner. Unlike a traditional classroom, The Odin Project does not have someone standing over your shoulder. Progress depends entirely on your own effort and consistency. That independence was challenging but also deeply rewarding. It proved that I could set my own pace, hold myself accountable and still reach the finish line.</p>
+
+          <p>Looking back, what I gained from The Odin Project goes far beyond syntax and frameworks. I learned perseverance, the value of small wins, the problem-solving power of debugging and the patience to approach challenges with a calmer mind. Most of all, I learned that becoming a developer is less about raw talent and more about persistence, curiosity and the willingness to keep moving forward even when the road gets steep. Those lessons will stay with me long after the last project is finished.</p>
+
+          <p class="mt-4"><a href="#" id="hideBlog" class="text-[color:var(--accent)]">Close post</a></p>
+        </div>
       </section>
 
       <section id="cv" class="my-12" data-reveal>

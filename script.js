@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
         const swatchWrap = document.createElement('div');
         swatchWrap.className = 'flex items-center gap-2';
         const labels = ['0','1–2','3–5','6–15','16+'];
-        for(let i=0;i<p.length;i++){out 
+        for(let i=0;i<p.length;i++){
           const item = document.createElement('div');
           item.className = 'flex items-center gap-2';
           const sw = document.createElement('span');
@@ -265,10 +265,10 @@ document.addEventListener("DOMContentLoaded", ()=>{
       io.observe(svg);
     }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-    // load data
+    // load data (try repo-root then public/ relative path; use relative paths for GitHub Pages)
     Promise.any([
-      fetch('/contrib.json').then(r=>r.ok? r.json() : Promise.reject()).catch(()=>Promise.reject()),
-      fetch('/public/contrib.json').then(r=>r.ok? r.json() : Promise.reject()).catch(()=>Promise.reject())
+      fetch('contrib.json').then(r=>r.ok? r.json() : Promise.reject()).catch(()=>Promise.reject()),
+      fetch('public/contrib.json').then(r=>r.ok? r.json() : Promise.reject()).catch(()=>Promise.reject())
     ]).then(data=>{
       let parsed = {grid: null, dates: null};
       if(data && data.weeks){
@@ -315,6 +315,32 @@ document.addEventListener("DOMContentLoaded", ()=>{
     console.log('WCAG AA (normal text) pass:', ratio>=4.5);
   }catch(e){ console.warn('Contrast check failed', e); }
 
+});
+
+// Read more / Close handlers for blog post
+document.addEventListener('DOMContentLoaded', ()=>{
+  const read = document.getElementById('readMore');
+  const hide = document.getElementById('hideBlog');
+  const full = document.getElementById('blog-full');
+  const header = document.getElementById('siteHeader');
+  function headerHeight(){ return header ? header.getBoundingClientRect().height : 0; }
+  if(read && full){
+    read.addEventListener('click', (e)=>{
+      e.preventDefault();
+      full.classList.remove('hidden');
+      full.setAttribute('aria-hidden','false');
+      const y = full.getBoundingClientRect().top + window.scrollY - headerHeight() - 8;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    });
+  }
+  if(hide && full){
+    hide.addEventListener('click', (e)=>{
+      e.preventDefault();
+      full.classList.add('hidden');
+      full.setAttribute('aria-hidden','true');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
 });
 
 // Smooth scroll with offset and active nav highlighting
