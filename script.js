@@ -382,6 +382,25 @@ document.addEventListener('DOMContentLoaded', ()=>{
   sections.forEach(s=>obs.observe(s));
 });
 
+// Smooth-link handler for manually added inline links (accounts for sticky header)
+document.addEventListener('DOMContentLoaded', ()=>{
+  const header = document.getElementById('siteHeader');
+  function headerHeight(){ return header ? header.getBoundingClientRect().height : 0; }
+  document.querySelectorAll('a.smooth-link').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      const href = a.getAttribute('href');
+      if(!href || !href.startsWith('#')) return;
+      const target = document.querySelector(href);
+      if(!target) return;
+      e.preventDefault();
+      const y = target.getBoundingClientRect().top + window.scrollY - headerHeight() - 8;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+      // after a small delay, focus the target for accessibility
+      setTimeout(()=>{ try{ target.setAttribute('tabindex','-1'); target.focus(); target.removeAttribute('tabindex'); }catch(e){} }, 400);
+    });
+  });
+});
+
 // Mockup interactivity: click/tap to cycle images, keyboard support for accessibility
 document.addEventListener('DOMContentLoaded', ()=>{
   function showIndex(container, index){
