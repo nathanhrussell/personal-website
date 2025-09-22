@@ -94,22 +94,23 @@
         <div class="grid md:grid-cols-2 gap-6">
           <article class="border rounded p-4 project-card" data-reveal>
             <h3 class="text-lg font-semibold">ChatApp</h3>
-            <p class="text-sm text-muted">Real-time chat for teams — rooms, presence, and simple moderation.</p>
+            <p class="text-sm text-muted">Real-time chat for individuals.</p>
 
             <div class="mockup mt-3 mb-3" tabindex="0" role="group" aria-label="Project preview: ChatApp" data-mockup-index="0">
+              <button class="zoom-btn" aria-label="Open image preview">🔍</button>
               <img src="assets/img/chatapp-1.webp" alt="ChatApp — conversation list" loading="lazy">
               <img src="assets/img/chatapp-2.webp" alt="ChatApp — sidebar and active conversation" loading="lazy">
             </div>
             <div class="mockup-hint" aria-hidden="true">Hover or tap to browse</div>
 
             <ul class="list-disc list-inside text-sm mt-2 text-muted">
-              <li>WebSocket-powered live updates</li>
-              <li>Auth and private rooms</li>
+              <li>Fully functional chat app</li>
+              <li>Authentication and private chats</li>
               <li>Accessible, responsive UI</li>
             </ul>
             <div class="mt-3 flex gap-2">
-              <a class="text-sm border px-3 py-1 rounded" href="#">Source on GitHub</a>
-              <a class="text-sm border px-3 py-1 rounded" href="#">Read docs</a>
+              <a class="text-sm border px-3 py-1 rounded" href="https://github.com/nathanhrussell/messaging-app/">Source on GitHub</a>
+              <a class="text-sm border px-3 py-1 rounded" href="https://github.com/nathanhrussell/messaging-app/blob/main/README.md">Read docs</a>
             </div>
           </article>
 
@@ -118,6 +119,7 @@
             <p class="text-sm text-muted">Small social feed focused on posts, comments, and clear UX.</p>
 
             <div class="mockup mt-3 mb-3" tabindex="0" role="group" aria-label="Project preview: OdinBook" data-mockup-index="0">
+              <button class="zoom-btn" aria-label="Open image preview">🔍</button>
               <img src="assets/img/odinbook-1.webp" alt="OdinBook — profile view in light mode" loading="lazy">
               <img src="assets/img/odinbook-2.webp" alt="OdinBook — posts page in dark mode" loading="lazy">
             </div>
@@ -129,8 +131,8 @@
               <li>Test-driven features</li>
             </ul>
             <div class="mt-3 flex gap-2">
-              <a class="text-sm border px-3 py-1 rounded" href="#">Source on GitHub</a>
-              <a class="text-sm border px-3 py-1 rounded" href="#">Read docs</a>
+              <a class="text-sm border px-3 py-1 rounded" href="https://github.com/nathanhrussell/odin-book/">Source on GitHub</a>
+              <a class="text-sm border px-3 py-1 rounded" href="https://github.com/nathanhrussell/odin-book/blob/main/README.md">Read docs</a>
             </div>
           </article>
         </div>
@@ -224,5 +226,14 @@
     </footer>
 
     <script src="script.js" defer></script>
+    <!-- Image modal for zoomed mockups -->
+    <div id="imgModal" class="img-modal" role="dialog" aria-hidden="true" aria-label="Image preview">
+      <div class="modal-inner">
+        <button class="close-btn" aria-label="Close image preview">✕</button>
+        <button class="modal-nav prev" aria-label="Previous image">◀</button>
+        <img src="" alt="" id="imgModalImg">
+        <button class="modal-nav next" aria-label="Next image">▶</button>
+      </div>
+    </div>
   </body>
 </html>

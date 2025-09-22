@@ -391,7 +391,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.querySelectorAll('.mockup').forEach(container=>{
     showIndex(container, Number(container.getAttribute('data-mockup-index')||0));
 
-    container.addEventListener('click', ()=>{
+    // Only cycle images when the container itself (or non-zoom controls) is clicked.
+    container.addEventListener('click', (e)=>{
+      // If a recent pointerdown on the zoom button set a flag, ignore this click (handles touch where pointerdown happens before click).
+      if(container.dataset.__zoom){ delete container.dataset.__zoom; return; }
+      // If the click originated from the zoom button (or its children), ignore so the zoom handler can run.
+      if(e.target.closest && e.target.closest('.zoom-btn')) return;
       const imgs = container.querySelectorAll(':scope > img');
       if(imgs.length<2) return;
       const idx = (Number(container.getAttribute('data-mockup-index')||0) + 1) % imgs.length;
@@ -404,5 +409,99 @@ document.addEventListener('DOMContentLoaded', ()=>{
         container.click();
       }
     });
+  });
+});
+
+// Image modal (zoom) for mockups
+document.addEventListener('DOMContentLoaded', ()=>{
+  const modal = document.getElementById('imgModal');
+  const modalImg = document.getElementById('imgModalImg');
+  const closeBtn = modal && modal.querySelector('.close-btn');
+  const prevBtn = modal && modal.querySelector('.modal-nav.prev');
+  const nextBtn = modal && modal.querySelector('.modal-nav.next');
+
+  // track the currently-opened container and index so we can navigate
+  let activeContainer = null;
+  let activeIndex = 0;
+
+  function openModal(src, alt, container, index){
+    if(!modal || !modalImg) return;
+    modalImg.src = src;
+    modalImg.alt = alt || '';
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+    activeContainer = container || null;
+    activeIndex = Number(index || 0);
+    closeBtn?.focus();
+  }
+  function closeModal(){
+    if(!modal) return;
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+    modalImg.src = '';
+    activeContainer = null;
+    activeIndex = 0;
+  }
+
+  // Wire zoom buttons inside mockups
+  document.querySelectorAll('.mockup').forEach(container=>{
+    const zoom = container.querySelector('.zoom-btn');
+    if(!zoom) return;
+    // On pointerdown (touch/pointer) mark the container so the following click handler knows to ignore the container click.
+    zoom.addEventListener('pointerdown', (ev)=>{
+      try{ container.dataset.__zoom = '1'; }catch(e){}
+      // clear after a short window
+      setTimeout(()=>{ try{ delete container.dataset.__zoom; }catch(e){} }, 400);
+    });
+    zoom.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      // find the currently visible image inside container
+      const imgs = Array.from(container.querySelectorAll('img'));
+      let visible = null;
+      // If the user is hovering the container, prefer the hover-visible image (second image in the simple hover-swap pattern)
+      try{
+        if(container.matches && container.matches(':hover') && imgs.length > 1){
+          visible = imgs[1];
+        }
+      }catch(e){}
+
+      // Otherwise, pick the first image with a computed opacity > 0.01
+      if(!visible){
+        visible = imgs.find(i=> parseFloat(getComputedStyle(i).opacity || '0') > 0.01);
+      }
+
+      // Fallback to the JS-tracked index or the first image
+      if(!visible){
+        const idx = Number(container.getAttribute('data-mockup-index') || 0);
+        visible = imgs[idx] || imgs[0];
+      }
+
+      if(visible) openModal(visible.src, visible.alt, container, imgs.indexOf(visible));
+    });
+  });
+
+  // modal controls
+  closeBtn?.addEventListener('click', closeModal);
+  modal?.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
+
+  function showModalIndex(delta){
+    if(!activeContainer) return;
+    const imgs = Array.from(activeContainer.querySelectorAll('img'));
+    if(!imgs.length) return;
+    activeIndex = (activeIndex + delta + imgs.length) % imgs.length;
+    const next = imgs[activeIndex];
+    if(next){ modalImg.src = next.src; modalImg.alt = next.alt || ''; }
+  }
+
+  prevBtn?.addEventListener('click', ()=> showModalIndex(-1));
+  nextBtn?.addEventListener('click', ()=> showModalIndex(1));
+
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape') return closeModal();
+    if(!modal.classList.contains('open')) return;
+    if(e.key === 'ArrowLeft') showModalIndex(-1);
+    if(e.key === 'ArrowRight') showModalIndex(1);
   });
 });

@@ -39,7 +39,7 @@
 
 /* Project mockup carousel (CSS-only hover swap) */
 .project-card .mockup{ position:relative; width:100%; padding-top:56%; background:var(--ui); border-radius:8px; overflow:hidden; }
-.project-card .mockup img{ position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; transition:opacity .35s ease, transform .35s ease; }
+.project-card .mockup img{ position:absolute; top:0; left:0; width:100%; height:100%; object-fit:contain; object-position:center; transition:opacity .35s ease, transform .35s ease; background: var(--ui); }
 /* use :nth-of-type so images remain selectable even if hint is present in DOM nearby */
 .project-card .mockup img{ opacity:0; transform:scale(.98); }
 /* Show image matching the data-mockup-index */
@@ -56,6 +56,40 @@
 .mockup:focus{ outline: 3px solid color-mix(in srgb, var(--accent) 60%, white); outline-offset: 4px; }
 .mockup-hint{ display:inline-block; position:relative; margin-top:8px; background:rgba(0,0,0,0.6); color:white; font-size:0.75rem; padding:6px 8px; border-radius:6px; backdrop-filter: blur(4px); }
 .dark .mockup-hint{ background: rgba(255,255,255,0.08); color: var(--text); }
+
+/* zoom button overlay inside mockup */
+.mockup .zoom-btn{
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  background: rgba(0,0,0,0.48);
+  color: white;
+  border-radius: 6px;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  opacity: 0.9; /* mostly visible by default */
+  transform: translateY(0);
+  transition: opacity .18s ease, transform .18s ease;
+  pointer-events: auto; /* ensure the button receives pointer events */
+  z-index: 5; /* sit above images */
+}
+.mockup:focus-within .zoom-btn{ opacity: 1; transform: translateY(0); }
+
+/* Modal for zoomed images */
+.img-modal{ position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); z-index: 60; }
+.img-modal.open{ display:flex; }
+.img-modal .modal-inner{ max-width: 95vw; max-height: 90vh; background: transparent; display:flex; align-items:center; justify-content:center; }
+.img-modal img{ max-width: 100%; max-height: 100%; border-radius:8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.img-modal .close-btn{ position:absolute; right:20px; top:20px; background: rgba(255,255,255,0.06); color: white; border-radius:6px; padding:8px; }
+
+/* modal nav arrows */
+.img-modal .modal-nav{ position:absolute; top:50%; transform: translateY(-50%); background: rgba(0,0,0,0.45); color: white; border-radius:6px; padding:8px 10px; z-index:70; }
+.img-modal .modal-nav.prev{ left: 18px; }
+.img-modal .modal-nav.next{ right: 18px; }
+.img-modal .modal-nav:focus{ outline: 2px solid color-mix(in srgb,var(--accent) 60%, white); }
 
 /* Header & nav styles */
 #siteHeader { border-color: var(--ui); }
