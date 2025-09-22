@@ -317,6 +317,91 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
 });
 
+// Inspiration easter: Alt+Q shows a random quote from local JSON
+document.addEventListener('DOMContentLoaded', ()=>{
+  const inspHint = document.getElementById('inspHint');
+  const modal = document.getElementById('inspoModal');
+  const inner = modal && modal.querySelector('.inspo-inner');
+  const close = modal && modal.querySelector('.inspo-close');
+  const textEl = document.getElementById('inspoText');
+  const authorEl = document.getElementById('inspoAuthor');
+  let quotes = [];
+
+  function fetchQuotes(){
+    return fetch('public/quotes.json').then(r=> r.ok? r.json() : fetch('quotes.json').then(r2=> r2.ok? r2.json() : [] )).catch(()=>[]);
+  }
+
+  function pickRandom(){
+    if(!quotes || !quotes.length) return null;
+    const last = localStorage.getItem('lastInspo');
+    // pick until different from last (up to tries)
+    let idx = Math.floor(Math.random()*quotes.length);
+    let tries = 0;
+    while(quotes[idx] && JSON.stringify(quotes[idx]) === last && tries < 8){
+      idx = Math.floor(Math.random()*quotes.length);
+      tries++;
+    }
+    return quotes[idx] || null;
+  }
+
+  function openInspo(){
+    const q = pickRandom();
+    if(!q) return;
+    textEl.textContent = q.text;
+    authorEl.textContent = q.author ? `— ${q.author}` : '';
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+    // focus close for keyboard users
+    close?.focus();
+    try{ localStorage.setItem('lastInspo', JSON.stringify(q)); }catch(e){}
+    // confetti unless user prefers reduced motion
+    if(!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      launchConfetti();
+    }
+  }
+  function closeInspo(){
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  // load quotes once
+  fetchQuotes().then(data=>{ quotes = Array.isArray(data) ? data : []; });
+
+  // keyboard handler: Alt+Q
+  document.addEventListener('keydown', (e)=>{
+    if(e.altKey && !e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 'q'){
+      e.preventDefault();
+      openInspo();
+    }
+  });
+
+  inspHint?.addEventListener('click', (e)=>{ e.preventDefault(); openInspo(); });
+  close?.addEventListener('click', closeInspo);
+  modal?.addEventListener('click', (e)=>{ if(e.target === modal) closeInspo(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeInspo(); });
+});
+
+// Simple confetti launcher: add colored divs and animate, then remove
+function launchConfetti(){
+  const colors = ['#60a5fa','#f59e0b','#34d399','#f472b6','#f97316'];
+  const count = 24;
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-piece confetti-anim';
+    el.style.background = colors[i % colors.length];
+    el.style.left = (10 + Math.random()*80) + 'vw';
+    el.style.top = (-5 - Math.random()*10) + 'vh';
+    el.style.width = (6 + Math.random()*8) + 'px';
+    el.style.height = (10 + Math.random()*10) + 'px';
+    el.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(el);
+    // cleanup
+    setTimeout(()=>{ el.remove(); }, 1100 + Math.random()*400);
+  }
+}
+
 // Read more / Close handlers for blog post
 document.addEventListener('DOMContentLoaded', ()=>{
   const read = document.getElementById('readMore');

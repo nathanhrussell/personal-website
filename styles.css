@@ -91,6 +91,33 @@
 .img-modal .modal-nav.next{ right: 18px; }
 .img-modal .modal-nav:focus{ outline: 2px solid color-mix(in srgb,var(--accent) 60%, white); }
 
+/* Inspiration hint and modal */
+.hint{ background: transparent; border: 1px solid color-mix(in srgb,var(--ui) 30%, transparent); color: var(--text); opacity: 0.9; }
+.hint:hover{ background: color-mix(in srgb,var(--ui) 8%, transparent); }
+
+.inspo-modal{ position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); z-index: 80; }
+.inspo-modal.open{ display:flex; }
+.inspo-inner{ max-width: 720px; width: calc(100% - 48px); background: var(--bg); color: var(--text); border-radius: 12px; padding: 28px; box-shadow: 0 14px 40px rgba(2,6,23,0.6); position:relative; transform: translateY(8px) scale(.995); opacity:0; transition: transform .28s cubic-bezier(.2,.9,.3,1), opacity .22s ease; }
+.inspo-modal.open .inspo-inner{ transform: translateY(0) scale(1); opacity:1; }
+.inspo-quote p{ font-size:1.125rem; margin:0 0 12px 0; font-style:italic; }
+.inspo-quote footer{ font-size:0.9rem; color: color-mix(in srgb,var(--text) 60%, transparent); }
+.inspo-close{ position:absolute; right:12px; top:12px; background: transparent; border-radius:6px; padding:6px; }
+
+@media (prefers-reduced-motion: reduce){
+  .inspo-inner{ transition: none; transform:none; }
+}
+
+/* Confetti pieces (created dynamically) */
+.confetti-piece{ position:fixed; width:10px; height:14px; opacity:0; pointer-events:none; transform-origin:center; z-index:90; border-radius:2px; }
+.confetti-anim{ animation: confetti-fall 900ms ease-out forwards; }
+@keyframes confetti-fall{
+  0%{ transform: translateY(-10vh) rotate(0deg); opacity:1; }
+  100%{ transform: translateY(110vh) rotate(720deg); opacity:0; }
+}
+@media (prefers-reduced-motion: reduce){
+  .confetti-anim{ animation: none; opacity:0.9; }
+}
+
 /* Header & nav styles */
 #siteHeader { border-color: var(--ui); }
 .nav-link{ padding:6px 8px; border-radius:6px; color:var(--text); text-decoration:none; }

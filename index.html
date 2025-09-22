@@ -49,6 +49,8 @@
           <button id="themeToggle" aria-label="Toggle dark mode" aria-pressed="false" class="ml-2 px-2 py-1 rounded focus:outline focus:outline-2 focus:outline-offset-2" >
             <span id="themeIcon">🌙</span>
           </button>
+          <!-- Inspiration hint: Alt+Q -->
+          <button id="inspHint" class="ml-2 px-2 py-1 rounded text-sm text-muted hint" aria-label="Press Alt+Q for an inspirational quote" title="Press Alt+Q">Alt+Q</button>
         </nav>
       </div>
     </header>
@@ -240,6 +242,13 @@
         <button class="modal-nav prev" aria-label="Previous image">◀</button>
         <img src="" alt="" id="imgModalImg">
         <button class="modal-nav next" aria-label="Next image">▶</button>
+      </div>
+    </div>
+    <!-- Inspiration modal (Alt+Q) -->
+    <div id="inspoModal" class="inspo-modal" role="dialog" aria-hidden="true" aria-label="Inspiration">
+      <div class="inspo-inner" role="document">
+        <button class="inspo-close close-btn" aria-label="Close inspiration">✕</button>
+        <blockquote class="inspo-quote"><p id="inspoText"></p><footer id="inspoAuthor"></footer></blockquote>
       </div>
     </div>
   </body>
