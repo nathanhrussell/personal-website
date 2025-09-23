@@ -19,7 +19,14 @@ function initTheme(){
   setTheme(saved || (prefersDark ? "dark" : "light"));
 }
 
-document.addEventListener("DOMContentLoaded", ()=>{
+// Utility: run fn now if DOM is ready, otherwise on DOMContentLoaded. This is important because
+// the script is injected dynamically (after load/idle) and may miss the DOMContentLoaded event.
+function onReady(fn){
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+  else fn();
+}
+
+onReady(()=>{
   initTheme();
   document.getElementById("themeToggle")?.addEventListener("click", ()=>{
     setTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
