@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* small project-specific utilities (keep minimal) */
+:root{ --accent: #3b82f6; }
+.text-muted{ opacity: .78; }
+.btn-accent{ background-color: var(--accent); color: white; }

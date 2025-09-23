@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
     setTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
   });
 
-  // Reveal on scroll
+  // Reveal on scroll (lightweight setup)
   const observer = new IntersectionObserver((entries, observer)=>{
     entries.forEach(e=>{
       if(e.isIntersecting){
@@ -40,8 +40,10 @@ document.addEventListener("DOMContentLoaded", ()=>{
     observer.observe(el);
   });
 
-  // Contribution graph — draw 53x7 grid and animate on first intersection. Theme-aware palette and redraw on theme change.
-  (function makeContribGrid(){
+  // Defer heavy/non-critical work: contribution graph and large fetches.
+  // drawContribGrid will be initialised lazily when the #github-graph enters the viewport.
+  function drawContribGrid(){
+    // original IIFE body (kept intact) but only executed on demand
     const svg = document.getElementById('contribSVG'); if(!svg) return;
     const cols = 53, rows = 7, size = 10, gap = 2;
     const labelLeft = 28; // space for weekday labels
@@ -225,7 +227,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
         legend.setAttribute('aria-label','Contribution legend');
         const swatchWrap = document.createElement('div');
         swatchWrap.className = 'flex items-center gap-2';
-        const labels = ['0','1–2','3–5','6–15','16+'];
+        const labels = ['0','1\u20132','3\u20135','6\u201315','16+'];
         for(let i=0;i<p.length;i++){
           const item = document.createElement('div');
           item.className = 'flex items-center gap-2';
@@ -289,10 +291,35 @@ document.addEventListener("DOMContentLoaded", ()=>{
       renderLegend(null);
       io.observe(svg);
     });
+  }
 
-  })();
+  // Initialise contribution graph when the section becomes visible. This avoids heavy work on first paint.
+  function initContribWhenVisible(){
+    const container = document.getElementById('github-graph');
+    if(!container) return;
+    const alreadyVisible = container.getBoundingClientRect().top < window.innerHeight;
+    const run = ()=>{
+      if('requestIdleCallback' in window){
+        try{ requestIdleCallback(drawContribGrid, {timeout: 1500}); }catch(e){ setTimeout(drawContribGrid, 800); }
+      } else {
+        setTimeout(drawContribGrid, 800);
+      }
+    };
+    if(alreadyVisible){ run(); return; }
+    const io = new IntersectionObserver((entries, obs)=>{
+      entries.forEach(ent=>{
+        if(ent.isIntersecting){
+          run();
+          obs.unobserve(ent.target);
+        }
+      });
+    }, { threshold: 0.05 });
+    io.observe(container);
+  }
 
-  // Contrast check (basic, logs results)
+  initContribWhenVisible();
+
+  // Contrast check (basic, logs results) - run during idle
   function luminance(r,g,b){
     const a = [r,g,b].map(v=>{ v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4); });
     return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];
@@ -306,35 +333,40 @@ document.addEventListener("DOMContentLoaded", ()=>{
     const L2 = luminance(...hexToRgb(hex2));
     return (Math.max(L1,L2)+0.05)/(Math.min(L1,L2)+0.05);
   }
-  try{
-    const style = getComputedStyle(document.documentElement);
-    const bg = style.getPropertyValue('--bg').trim() || '#ffffff';
-    const text = style.getPropertyValue('--text').trim() || '#111827';
-    const ratio = contrast(bg,text);
-    console.log('Contrast ratio (text vs bg):', ratio.toFixed(2));
-    console.log('WCAG AA (normal text) pass:', ratio>=4.5);
-  }catch(e){ console.warn('Contrast check failed', e); }
+  const runContrast = ()=>{
+    try{
+      const style = getComputedStyle(document.documentElement);
+      const bg = style.getPropertyValue('--bg').trim() || '#ffffff';
+      const text = style.getPropertyValue('--text').trim() || '#111827';
+      const ratio = contrast(bg,text);
+      console.log('Contrast ratio (text vs bg):', ratio.toFixed(2));
+      console.log('WCAG AA (normal text) pass:', ratio>=4.5);
+    }catch(e){ console.warn('Contrast check failed', e); }
+  };
+  if('requestIdleCallback' in window) requestIdleCallback(runContrast, {timeout:2000}); else setTimeout(runContrast, 1200);
 
-});
-
-// Inspiration easter: Alt+Q shows a random quote from local JSON
-document.addEventListener('DOMContentLoaded', ()=>{
+  // --- Inspiration modal & quotes (lazy fetch) ---
+  // We'll lazy-load the quotes JSON only when the user opens the insp modal.
   const inspHint = document.getElementById('inspHint');
   const modal = document.getElementById('inspoModal');
   const inner = modal && modal.querySelector('.inspo-inner');
   const close = modal && modal.querySelector('.inspo-close');
   const textEl = document.getElementById('inspoText');
   const authorEl = document.getElementById('inspoAuthor');
-  let quotes = [];
+  let quotes = null; // null means not fetched yet
 
-  function fetchQuotes(){
-    return fetch('public/quotes.json').then(r=> r.ok? r.json() : fetch('quotes.json').then(r2=> r2.ok? r2.json() : [] )).catch(()=>[]);
+  function fetchQuotesLazy(){
+    if(quotes !== null) return Promise.resolve(quotes);
+    // try public first then root
+    return Promise.any([
+      fetch('public/quotes.json').then(r=> r.ok? r.json() : Promise.reject()).catch(()=>Promise.reject()),
+      fetch('quotes.json').then(r=> r.ok? r.json() : Promise.reject()).catch(()=>Promise.reject())
+    ]).then(data=>{ quotes = Array.isArray(data) ? data : []; return quotes; }).catch(()=>{ quotes = []; return quotes; });
   }
 
   function pickRandom(){
     if(!quotes || !quotes.length) return null;
     const last = localStorage.getItem('lastInspo');
-    // pick until different from last (up to tries)
     let idx = Math.floor(Math.random()*quotes.length);
     let tries = 0;
     while(quotes[idx] && JSON.stringify(quotes[idx]) === last && tries < 8){
@@ -345,36 +377,30 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   function openInspo(){
-  console.log('[inspo debug] openInspo called');
-    const q = pickRandom();
-    if(!q) return;
-    textEl.textContent = q.text;
-    authorEl.textContent = q.author ? `— ${q.author}` : '';
-    modal.classList.add('open');
-    modal.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-    // focus close for keyboard users
-    close?.focus();
-    try{ localStorage.setItem('lastInspo', JSON.stringify(q)); }catch(e){}
-    // confetti unless user prefers reduced motion
-    if(!window.matchMedia) {
-      console.log('[inspo debug] No matchMedia, running confetti');
-      launchConfetti();
-    } else if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      console.log('[inspo debug] prefers-reduced-motion: NO, running confetti');
-      launchConfetti();
-    } else {
-      console.log('[inspo debug] prefers-reduced-motion: YES, skipping confetti');
-    }
+    // ensure quotes are loaded before showing
+    fetchQuotesLazy().then(()=>{
+      const q = pickRandom();
+      if(!q) return;
+      textEl.textContent = q.text;
+      authorEl.textContent = q.author ? `\u2014 ${q.author}` : '';
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+      close?.focus();
+      try{ localStorage.setItem('lastInspo', JSON.stringify(q)); }catch(e){}
+      if(!window.matchMedia) {
+        launchConfetti();
+      } else if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        launchConfetti();
+      }
+    });
   }
+
   function closeInspo(){
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden','true');
     document.body.style.overflow = '';
   }
-
-  // load quotes once
-  fetchQuotes().then(data=>{ quotes = Array.isArray(data) ? data : []; });
 
   // keyboard handler: Alt+Q
   document.addEventListener('keydown', (e)=>{
@@ -388,36 +414,62 @@ document.addEventListener('DOMContentLoaded', ()=>{
   close?.addEventListener('click', closeInspo);
   modal?.addEventListener('click', (e)=>{ if(e.target === modal) closeInspo(); });
   document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeInspo(); });
+
 });
+
+// Inspiration easter: Alt+Q shows a random quote from local JSON
+// Removed duplicate insp initialiser - quotes are loaded lazily by the main DOMContentLoaded handler above.
 
 // Simple confetti launcher: add colored divs and animate, then remove
 function launchConfetti(){
-    console.log('[confetti debug] typeof confetti:', typeof confetti, 'window.confetti:', typeof window.confetti);
-  // Use canvas-confetti if available
-  if (typeof confetti === 'function') {
-    confetti({
-      particleCount: 80,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#60a5fa','#f59e0b','#34d399','#f472b6','#f97316']
-    });
-  } else {
-    // fallback: colored divs
-    const colors = ['#60a5fa','#f59e0b','#34d399','#f472b6','#f97316'];
-    const count = 24;
-    for(let i=0;i<count;i++){
-      const el = document.createElement('div');
-      el.className = 'confetti-piece confetti-anim';
-      el.style.background = colors[i % colors.length];
-      el.style.left = (10 + Math.random()*80) + 'vw';
-      el.style.top = (-5 - Math.random()*10) + 'vh';
-      el.style.width = (6 + Math.random()*8) + 'px';
-      el.style.height = (10 + Math.random()*10) + 'px';
-      el.style.transform = `rotate(${Math.random()*360}deg)`;
-      document.body.appendChild(el);
-      setTimeout(()=>{ el.remove(); }, 1100 + Math.random()*400);
+    // Try canvas-confetti loaded dynamically; fall back to DOM confetti
+    const tryRun = ()=>{
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 }, colors: ['#60a5fa','#f59e0b','#34d399','#f472b6','#f97316'] });
+        return true;
+      }
+      return false;
+    };
+
+    if(tryRun()) return;
+
+    // If not available, attempt to load canvas-confetti from CDN once, then run. Keep this off the critical path.
+    if(!window.__confettiLoading){
+      window.__confettiLoading = true;
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js';
+      s.async = true;
+      s.onload = ()=>{
+        tryRun();
+      };
+      s.onerror = ()=>{
+        // last resort: DOM confetti fallback
+        runDomConfetti();
+      };
+      document.head.appendChild(s);
+      // also set a timeout to fallback if script stalls
+      setTimeout(()=>{ if(!tryRun()) runDomConfetti(); }, 1200);
+    } else {
+      // another invocation while the script is loading - wait briefly and fallback
+      setTimeout(()=>{ if(!tryRun()) runDomConfetti(); }, 600);
     }
-  }
+
+    function runDomConfetti(){
+      const colors = ['#60a5fa','#f59e0b','#34d399','#f472b6','#f97316'];
+      const count = 24;
+      for(let i=0;i<count;i++){
+        const el = document.createElement('div');
+        el.className = 'confetti-piece confetti-anim';
+        el.style.background = colors[i % colors.length];
+        el.style.left = (10 + Math.random()*80) + 'vw';
+        el.style.top = (-5 - Math.random()*10) + 'vh';
+        el.style.width = (6 + Math.random()*8) + 'px';
+        el.style.height = (10 + Math.random()*10) + 'px';
+        el.style.transform = `rotate(${Math.random()*360}deg)`;
+        document.body.appendChild(el);
+        setTimeout(()=>{ el.remove(); }, 1100 + Math.random()*400);
+      }
+    }
 }
 
 // Read more / Close handlers for blog post

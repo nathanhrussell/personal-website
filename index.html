@@ -14,13 +14,16 @@
   <meta name="twitter:card" content="summary_large_image">
     <title>Nathan Russell — Full-stack Developer</title>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Fonts (non-blocking) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- preload the font stylesheet then activate it on load to avoid blocking first paint -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@600;700&display=swap" as="style" onload="this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@600;700&display=swap" rel="stylesheet"></noscript>
 
-    <!-- Tailwind CDN (deferred to avoid blocking first-paint) -->
-    <script src="https://cdn.tailwindcss.com" defer></script>
+  <!-- Local, purged Tailwind CSS (built) loaded non-blocking -->
+  <link rel="stylesheet" href="public/tailwind.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="public/tailwind.css"></noscript>
 
     <!-- Critical inline CSS: variables, base typography and a few utility rules to avoid FOUC -->
     <style>
@@ -33,6 +36,19 @@
       :focus{ outline: 2px solid #60a5fa; outline-offset: 6px; }
     </style>
 
+    <!-- Inline, ultra-small theme initializer: set data-theme before paint to avoid FOUC. -->
+    <script>
+      (function(){
+        try{
+          var key='theme';
+          var saved = localStorage.getItem(key);
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var theme = saved || (prefersDark ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        }catch(e){/* ignore */}
+      })();
+    </script>
+
     <!-- Preload hero headshot to prioritise the image used in the hero -->
     <link rel="preload" href="assets/img/headshot.webp" as="image">
 
@@ -40,8 +56,7 @@
     <link rel="stylesheet" href="styles.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="styles.css"></noscript>
 
-    <!-- Canvas Confetti CDN (defer) -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
+  <!-- Canvas confetti will be loaded lazily when needed -->
   </head>
   <body class="antialiased">
     <header id="siteHeader" class="sticky top-0 bg-[color:var(--bg)]/80 backdrop-blur z-40 border-b" role="banner">
@@ -244,7 +259,22 @@
       <div class="max-w-4xl mx-auto">© Nathan Russell</div>
     </footer>
 
-    <script src="script.js" defer></script>
+    <!-- Load main JS after load/idle to keep initial render fast -->
+    <script>
+      (function(){
+        function load(){
+          var s = document.createElement('script');
+          s.src = 'script.js';
+          s.async = true;
+          document.body.appendChild(s);
+        }
+        if('requestIdleCallback' in window){
+          requestIdleCallback(load, {timeout:1500});
+        } else {
+          window.addEventListener('load', function(){ setTimeout(load, 600); });
+        }
+      })();
+    </script>
     <!-- Image modal for zoomed mockups -->
     <div id="imgModal" class="img-modal" role="dialog" aria-hidden="true" aria-label="Image preview">
       <div class="modal-inner">
