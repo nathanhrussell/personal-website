@@ -451,8 +451,52 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const header = document.getElementById('siteHeader');
   const navLinks = Array.from(document.querySelectorAll('.nav-link'));
   const sections = navLinks.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const underline = document.getElementById('nav-underline');
 
   function headerHeight(){ return header ? header.getBoundingClientRect().height : 0; }
+
+  // Set underline to match a given link element
+  function setUnderlineForEl(el){
+    if (!underline) return;
+    if (!el) {
+      underline.style.opacity = '0';
+      underline.style.width = '0px';
+      return;
+    }
+    const parentRect = underline.parentElement.getBoundingClientRect();
+    // Try to measure only the text/content inside the link (so underline sits under text, not the padded pill)
+    let linkRect = null;
+    try{
+      const range = document.createRange();
+      const textNode = Array.from(el.childNodes).find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+      if(textNode){
+        range.selectNodeContents(textNode);
+        const r = range.getBoundingClientRect();
+        if(r && r.width > 0){ linkRect = r; }
+      }
+    }catch(e){ /* ignore */ }
+    if(!linkRect){ linkRect = el.getBoundingClientRect(); }
+    underline.style.opacity = '1';
+    underline.style.left = (linkRect.left - parentRect.left) + 'px';
+    underline.style.width = linkRect.width + 'px';
+    // match link color where sensible, fall back to accent
+    const color = getComputedStyle(el).color || getComputedStyle(document.documentElement).getPropertyValue('--accent');
+    underline.style.background = color;
+  }
+
+  // Move underline to currently active link (or first link as fallback)
+  function moveUnderline(){
+    const active = document.querySelector('.nav-link.active') || navLinks[0];
+    setUnderlineForEl(active);
+  }
+
+  // Hover/focus interactions: temporarily show underline under hovered/focused link
+  navLinks.forEach(a=>{
+    a.addEventListener('mouseenter', ()=> setUnderlineForEl(a));
+    a.addEventListener('focus', ()=> setUnderlineForEl(a));
+    a.addEventListener('mouseleave', ()=> moveUnderline());
+    a.addEventListener('blur', ()=> moveUnderline());
+  });
 
   // Adjust scroll to account for header when clicking anchors
   navLinks.forEach(a=>{
@@ -462,6 +506,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
         const target = document.querySelector(href);
         if(target){
           e.preventDefault();
+          // mark this link active immediately so the underline persists while we smooth-scroll
+          navLinks.forEach(l => l.classList.remove('active'));
+          a.classList.add('active');
+          moveUnderline();
           const y = target.getBoundingClientRect().top + window.scrollY - headerHeight() - 8;
           window.scrollTo({ top: y, behavior: 'smooth' });
         }
@@ -478,11 +526,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
       if(ent.isIntersecting){
         navLinks.forEach(l=>l.classList.remove('active'));
         link.classList.add('active');
+        moveUnderline();
       }
     });
   }, { rootMargin: `-${headerHeight()}px 0px -40% 0px`, threshold: 0.2 });
 
   sections.forEach(s=>obs.observe(s));
+
+  // On resize, reposition underline
+  window.addEventListener('resize', moveUnderline);
+  // On load, position underline
+  setTimeout(moveUnderline, 80);
 });
 
 // Smooth-link handler for manually added inline links (accounts for sticky header)
