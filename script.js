@@ -390,6 +390,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeInspo(); });
 });
 
+
 // Simple confetti launcher: add colored divs and animate, then remove
 function launchConfetti(){
     console.log('[confetti debug] typeof confetti:', typeof confetti, 'window.confetti:', typeof window.confetti);
