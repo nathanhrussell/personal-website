@@ -345,6 +345,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   function openInspo(){
+  console.log('[inspo debug] openInspo called');
     const q = pickRandom();
     if(!q) return;
     textEl.textContent = q.text;
@@ -356,8 +357,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
     close?.focus();
     try{ localStorage.setItem('lastInspo', JSON.stringify(q)); }catch(e){}
     // confetti unless user prefers reduced motion
-    if(!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    if(!window.matchMedia) {
+      console.log('[inspo debug] No matchMedia, running confetti');
       launchConfetti();
+    } else if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      console.log('[inspo debug] prefers-reduced-motion: NO, running confetti');
+      launchConfetti();
+    } else {
+      console.log('[inspo debug] prefers-reduced-motion: YES, skipping confetti');
     }
   }
   function closeInspo(){
@@ -385,20 +392,31 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 // Simple confetti launcher: add colored divs and animate, then remove
 function launchConfetti(){
-  const colors = ['#60a5fa','#f59e0b','#34d399','#f472b6','#f97316'];
-  const count = 24;
-  for(let i=0;i<count;i++){
-    const el = document.createElement('div');
-    el.className = 'confetti-piece confetti-anim';
-    el.style.background = colors[i % colors.length];
-    el.style.left = (10 + Math.random()*80) + 'vw';
-    el.style.top = (-5 - Math.random()*10) + 'vh';
-    el.style.width = (6 + Math.random()*8) + 'px';
-    el.style.height = (10 + Math.random()*10) + 'px';
-    el.style.transform = `rotate(${Math.random()*360}deg)`;
-    document.body.appendChild(el);
-    // cleanup
-    setTimeout(()=>{ el.remove(); }, 1100 + Math.random()*400);
+    console.log('[confetti debug] typeof confetti:', typeof confetti, 'window.confetti:', typeof window.confetti);
+  // Use canvas-confetti if available
+  if (typeof confetti === 'function') {
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#60a5fa','#f59e0b','#34d399','#f472b6','#f97316']
+    });
+  } else {
+    // fallback: colored divs
+    const colors = ['#60a5fa','#f59e0b','#34d399','#f472b6','#f97316'];
+    const count = 24;
+    for(let i=0;i<count;i++){
+      const el = document.createElement('div');
+      el.className = 'confetti-piece confetti-anim';
+      el.style.background = colors[i % colors.length];
+      el.style.left = (10 + Math.random()*80) + 'vw';
+      el.style.top = (-5 - Math.random()*10) + 'vh';
+      el.style.width = (6 + Math.random()*8) + 'px';
+      el.style.height = (10 + Math.random()*10) + 'px';
+      el.style.transform = `rotate(${Math.random()*360}deg)`;
+      document.body.appendChild(el);
+      setTimeout(()=>{ el.remove(); }, 1100 + Math.random()*400);
+    }
   }
 }
 
