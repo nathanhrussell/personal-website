@@ -9,54 +9,29 @@
   <meta property="og:description" content="Full-stack developer focused on clarity, accessibility, and performance. Projects: ChatApp, OdinBook.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://nathanhrussell.github.io/">
-  <meta property="og:image" content="assets/img/headshot.webp">
-  <meta property="og:image:type" content="image/webp">
+  <meta property="og:image" content="assets/img/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
     <title>Nathan Russell — Full-stack Developer</title>
 
-  <!-- Fonts (non-blocking) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- preload the font stylesheet then activate it on load to avoid blocking first paint -->
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@600;700&display=swap" as="style" onload="this.rel='stylesheet'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@600;700&display=swap" rel="stylesheet"></noscript>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@600;700&display=swap" rel="stylesheet">
 
-  <!-- Local, purged Tailwind CSS (built) loaded non-blocking -->
-  <link rel="stylesheet" href="public/tailwind.css" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="public/tailwind.css"></noscript>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Critical inline CSS: variables, base typography and a few utility rules to avoid FOUC -->
     <style>
-      :root{--bg:#ffffff;--text:#111827;--ui:#e5e7eb;--accent:#3b82f6;--secondary:#f59e0b}
-      [data-theme="dark"]{--bg:#111827;--text:#f9fafb;--ui:#374151;--accent:#60a5fa;--secondary:#fbbf24}
-      html{ transition: background-color .3s, color .3s; scroll-behavior: smooth; }
-      body{ font-family: 'Inter', sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; }
+      html{ transition: background-color .3s, color .3s; }
+      body{ font-family: 'Inter', sans-serif; background:var(--bg); color:var(--text); }
       h1,h2,h3,h4,h5,h6{ font-family: 'Lora', serif; }
       .reveal{ opacity:1 !important; transform:none !important; }
-      :focus{ outline: 2px solid #60a5fa; outline-offset: 6px; }
     </style>
 
-    <!-- Inline, ultra-small theme initializer: set data-theme before paint to avoid FOUC. -->
-    <script>
-      (function(){
-        try{
-          var key='theme';
-          var saved = localStorage.getItem(key);
-          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-          var theme = saved || (prefersDark ? 'dark' : 'light');
-          document.documentElement.setAttribute('data-theme', theme);
-        }catch(e){/* ignore */}
-      })();
-    </script>
-
-    <!-- Preload hero headshot to prioritise the image used in the hero -->
-    <link rel="preload" href="assets/img/headshot.webp" as="image">
-
-    <!-- Load the rest of the stylesheet non-blocking; provide a noscript fallback -->
-    <link rel="stylesheet" href="styles.css" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="styles.css"></noscript>
-
-  <!-- Canvas confetti will be loaded lazily when needed -->
+  <link rel="preload" href="assets/img/headshot.webp" as="image">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   </head>
   <body class="antialiased">
     <header id="siteHeader" class="sticky top-0 bg-[color:var(--bg)]/80 backdrop-blur z-40 border-b" role="banner">
@@ -66,7 +41,6 @@
           <span class="text-sm text-muted">Full‑stack developer</span>
         </div>
         <nav id="primaryNav" aria-label="Primary" class="flex items-center gap-3">
-          <div id="nav-underline"></div>
           <a href="#home" class="nav-link text-sm">Home</a>
           <a href="#about" class="nav-link text-sm">About</a>
           <a href="#projects" class="nav-link text-sm">Projects</a>
@@ -95,7 +69,7 @@
           </div>
         </div>
         <div class="w-28 h-28 rounded-full overflow-hidden ring-2 ring-[color:var(--ui)]">
-          <img src="assets/img/headshot.webp" alt="Headshot of Nathan Russell" width="112" height="112" loading="eager" fetchpriority="high" decoding="async">
+          <img src="assets/img/headshot.webp" alt="Headshot of Nathan Russell" width="112" height="112" loading="eager">
         </div>
       </section>
 
@@ -120,6 +94,9 @@
               <span class="chip">Languages: English, Spanish</span>
             </div>
           </div>
+          <div class="hidden md:block w-28 h-28 rounded-full overflow-hidden ring-2 ring-[color:var(--ui)]">
+            <img src="assets/img/headshot.webp" alt="Headshot of Nathan Russell" width="112" height="112" loading="lazy">
+          </div>
         </div>
       </section>
 
@@ -132,8 +109,8 @@
 
             <div class="mockup mt-3 mb-3" tabindex="0" role="group" aria-label="Project preview: ChatApp" data-mockup-index="0">
               <button class="zoom-btn" aria-label="Open image preview">🔍</button>
-              <img src="assets/img/chatapp-1.webp" alt="ChatApp — conversation list" loading="lazy" decoding="async" width="800" height="450">
-              <img src="assets/img/chatapp-2.webp" alt="ChatApp — sidebar and active conversation" loading="lazy" decoding="async" width="800" height="450">
+              <img src="assets/img/chatapp-1.webp" alt="ChatApp — conversation list" loading="lazy">
+              <img src="assets/img/chatapp-2.webp" alt="ChatApp — sidebar and active conversation" loading="lazy">
             </div>
             <div class="mockup-hint" aria-hidden="true">Hover or tap to browse</div>
 
@@ -154,8 +131,8 @@
 
             <div class="mockup mt-3 mb-3" tabindex="0" role="group" aria-label="Project preview: OdinBook" data-mockup-index="0">
               <button class="zoom-btn" aria-label="Open image preview">🔍</button>
-              <img src="assets/img/odinbook-1.webp" alt="OdinBook — profile view in light mode" loading="lazy" decoding="async" width="800" height="450">
-              <img src="assets/img/odinbook-2.webp" alt="OdinBook — posts page in dark mode" loading="lazy" decoding="async" width="800" height="450">
+              <img src="assets/img/odinbook-1.webp" alt="OdinBook — profile view in light mode" loading="lazy">
+              <img src="assets/img/odinbook-2.webp" alt="OdinBook — posts page in dark mode" loading="lazy">
             </div>
             <div class="mockup-hint" aria-hidden="true">Hover or tap to browse</div>
 
@@ -259,22 +236,7 @@
       <div class="max-w-4xl mx-auto">© Nathan Russell</div>
     </footer>
 
-    <!-- Load main JS after load/idle to keep initial render fast -->
-    <script>
-      (function(){
-        function load(){
-          var s = document.createElement('script');
-          s.src = 'script.js';
-          s.async = true;
-          document.body.appendChild(s);
-        }
-        if('requestIdleCallback' in window){
-          requestIdleCallback(load, {timeout:1500});
-        } else {
-          window.addEventListener('load', function(){ setTimeout(load, 600); });
-        }
-      })();
-    </script>
+    <script src="script.js" defer></script>
     <!-- Image modal for zoomed mockups -->
     <div id="imgModal" class="img-modal" role="dialog" aria-hidden="true" aria-label="Image preview">
       <div class="modal-inner">

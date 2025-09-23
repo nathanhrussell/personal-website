@@ -19,20 +19,13 @@ function initTheme(){
   setTheme(saved || (prefersDark ? "dark" : "light"));
 }
 
-// Utility: run fn now if DOM is ready, otherwise on DOMContentLoaded. This is important because
-// the script is injected dynamically (after load/idle) and may miss the DOMContentLoaded event.
-function onReady(fn){
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
-  else fn();
-}
-
-onReady(()=>{
+document.addEventListener("DOMContentLoaded", ()=>{
   initTheme();
   document.getElementById("themeToggle")?.addEventListener("click", ()=>{
     setTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
   });
 
-  // Reveal on scroll (lightweight setup)
+  // Reveal on scroll
   const observer = new IntersectionObserver((entries, observer)=>{
     entries.forEach(e=>{
       if(e.isIntersecting){
@@ -47,10 +40,8 @@ onReady(()=>{
     observer.observe(el);
   });
 
-  // Defer heavy/non-critical work: contribution graph and large fetches.
-  // drawContribGrid will be initialised lazily when the #github-graph enters the viewport.
-  function drawContribGrid(){
-    // original IIFE body (kept intact) but only executed on demand
+  // Contribution graph — draw 53x7 grid and animate on first intersection. Theme-aware palette and redraw on theme change.
+  (function makeContribGrid(){
     const svg = document.getElementById('contribSVG'); if(!svg) return;
     const cols = 53, rows = 7, size = 10, gap = 2;
     const labelLeft = 28; // space for weekday labels
@@ -129,21 +120,7 @@ onReady(()=>{
           if(!months.has(key)) months.set(key, {col: c, date: dt});
         }
       }
-      
-      // Sort months by column and only filter if they're too close (less than 2 columns apart)
-      const sortedMonths = Array.from(months.values()).sort((a,b)=> a.col - b.col);
-      const filteredMonths = [];
-      let lastCol = -1;
-      
-      for(const month of sortedMonths){
-        // Only skip if labels would be closer than 2 columns (about 14 days) apart
-        if(month.col - lastCol >= 2 || lastCol === -1){
-          filteredMonths.push(month);
-          lastCol = month.col;
-        }
-      }
-      
-      return filteredMonths;
+      return Array.from(months.values()).sort((a,b)=> a.col - b.col);
     }
 
     function draw(gridBuckets){
@@ -248,7 +225,7 @@ onReady(()=>{
         legend.setAttribute('aria-label','Contribution legend');
         const swatchWrap = document.createElement('div');
         swatchWrap.className = 'flex items-center gap-2';
-        const labels = ['0','1\u20132','3\u20135','6\u201315','16+'];
+        const labels = ['0','1–2','3–5','6–15','16+'];
         for(let i=0;i<p.length;i++){
           const item = document.createElement('div');
           item.className = 'flex items-center gap-2';
@@ -312,35 +289,10 @@ onReady(()=>{
       renderLegend(null);
       io.observe(svg);
     });
-  }
 
-  // Initialise contribution graph when the section becomes visible. This avoids heavy work on first paint.
-  function initContribWhenVisible(){
-    const container = document.getElementById('github-graph');
-    if(!container) return;
-    const alreadyVisible = container.getBoundingClientRect().top < window.innerHeight;
-    const run = ()=>{
-      if('requestIdleCallback' in window){
-        try{ requestIdleCallback(drawContribGrid, {timeout: 1500}); }catch(e){ setTimeout(drawContribGrid, 800); }
-      } else {
-        setTimeout(drawContribGrid, 800);
-      }
-    };
-    if(alreadyVisible){ run(); return; }
-    const io = new IntersectionObserver((entries, obs)=>{
-      entries.forEach(ent=>{
-        if(ent.isIntersecting){
-          run();
-          obs.unobserve(ent.target);
-        }
-      });
-    }, { threshold: 0.05 });
-    io.observe(container);
-  }
+  })();
 
-  initContribWhenVisible();
-
-  // Contrast check (basic, logs results) - run during idle
+  // Contrast check (basic, logs results)
   function luminance(r,g,b){
     const a = [r,g,b].map(v=>{ v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4); });
     return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];
@@ -354,40 +306,35 @@ onReady(()=>{
     const L2 = luminance(...hexToRgb(hex2));
     return (Math.max(L1,L2)+0.05)/(Math.min(L1,L2)+0.05);
   }
-  const runContrast = ()=>{
-    try{
-      const style = getComputedStyle(document.documentElement);
-      const bg = style.getPropertyValue('--bg').trim() || '#ffffff';
-      const text = style.getPropertyValue('--text').trim() || '#111827';
-      const ratio = contrast(bg,text);
-      console.log('Contrast ratio (text vs bg):', ratio.toFixed(2));
-      console.log('WCAG AA (normal text) pass:', ratio>=4.5);
-    }catch(e){ console.warn('Contrast check failed', e); }
-  };
-  if('requestIdleCallback' in window) requestIdleCallback(runContrast, {timeout:2000}); else setTimeout(runContrast, 1200);
+  try{
+    const style = getComputedStyle(document.documentElement);
+    const bg = style.getPropertyValue('--bg').trim() || '#ffffff';
+    const text = style.getPropertyValue('--text').trim() || '#111827';
+    const ratio = contrast(bg,text);
+    console.log('Contrast ratio (text vs bg):', ratio.toFixed(2));
+    console.log('WCAG AA (normal text) pass:', ratio>=4.5);
+  }catch(e){ console.warn('Contrast check failed', e); }
 
-  // --- Inspiration modal & quotes (lazy fetch) ---
-  // We'll lazy-load the quotes JSON only when the user opens the insp modal.
+});
+
+// Inspiration easter: Alt+Q shows a random quote from local JSON
+document.addEventListener('DOMContentLoaded', ()=>{
   const inspHint = document.getElementById('inspHint');
   const modal = document.getElementById('inspoModal');
   const inner = modal && modal.querySelector('.inspo-inner');
   const close = modal && modal.querySelector('.inspo-close');
   const textEl = document.getElementById('inspoText');
   const authorEl = document.getElementById('inspoAuthor');
-  let quotes = null; // null means not fetched yet
+  let quotes = [];
 
-  function fetchQuotesLazy(){
-    if(quotes !== null) return Promise.resolve(quotes);
-    // try public first then root
-    return Promise.any([
-      fetch('public/quotes.json').then(r=> r.ok? r.json() : Promise.reject()).catch(()=>Promise.reject()),
-      fetch('quotes.json').then(r=> r.ok? r.json() : Promise.reject()).catch(()=>Promise.reject())
-    ]).then(data=>{ quotes = Array.isArray(data) ? data : []; return quotes; }).catch(()=>{ quotes = []; return quotes; });
+  function fetchQuotes(){
+    return fetch('public/quotes.json').then(r=> r.ok? r.json() : fetch('quotes.json').then(r2=> r2.ok? r2.json() : [] )).catch(()=>[]);
   }
 
   function pickRandom(){
     if(!quotes || !quotes.length) return null;
     const last = localStorage.getItem('lastInspo');
+    // pick until different from last (up to tries)
     let idx = Math.floor(Math.random()*quotes.length);
     let tries = 0;
     while(quotes[idx] && JSON.stringify(quotes[idx]) === last && tries < 8){
@@ -398,30 +345,36 @@ onReady(()=>{
   }
 
   function openInspo(){
-    // ensure quotes are loaded before showing
-    fetchQuotesLazy().then(()=>{
-      const q = pickRandom();
-      if(!q) return;
-      textEl.textContent = q.text;
-      authorEl.textContent = q.author ? `\u2014 ${q.author}` : '';
-      modal.classList.add('open');
-      modal.setAttribute('aria-hidden','false');
-      document.body.style.overflow = 'hidden';
-      close?.focus();
-      try{ localStorage.setItem('lastInspo', JSON.stringify(q)); }catch(e){}
-      if(!window.matchMedia) {
-        launchConfetti();
-      } else if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        launchConfetti();
-      }
-    });
+  console.log('[inspo debug] openInspo called');
+    const q = pickRandom();
+    if(!q) return;
+    textEl.textContent = q.text;
+    authorEl.textContent = q.author ? `— ${q.author}` : '';
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+    // focus close for keyboard users
+    close?.focus();
+    try{ localStorage.setItem('lastInspo', JSON.stringify(q)); }catch(e){}
+    // confetti unless user prefers reduced motion
+    if(!window.matchMedia) {
+      console.log('[inspo debug] No matchMedia, running confetti');
+      launchConfetti();
+    } else if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      console.log('[inspo debug] prefers-reduced-motion: NO, running confetti');
+      launchConfetti();
+    } else {
+      console.log('[inspo debug] prefers-reduced-motion: YES, skipping confetti');
+    }
   }
-
   function closeInspo(){
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden','true');
     document.body.style.overflow = '';
   }
+
+  // load quotes once
+  fetchQuotes().then(data=>{ quotes = Array.isArray(data) ? data : []; });
 
   // keyboard handler: Alt+Q
   document.addEventListener('keydown', (e)=>{
@@ -435,62 +388,36 @@ onReady(()=>{
   close?.addEventListener('click', closeInspo);
   modal?.addEventListener('click', (e)=>{ if(e.target === modal) closeInspo(); });
   document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeInspo(); });
-
 });
-
-// Inspiration easter: Alt+Q shows a random quote from local JSON
-// Removed duplicate insp initialiser - quotes are loaded lazily by the main DOMContentLoaded handler above.
 
 // Simple confetti launcher: add colored divs and animate, then remove
 function launchConfetti(){
-    // Try canvas-confetti loaded dynamically; fall back to DOM confetti
-    const tryRun = ()=>{
-      if (typeof confetti === 'function') {
-        confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 }, colors: ['#60a5fa','#f59e0b','#34d399','#f472b6','#f97316'] });
-        return true;
-      }
-      return false;
-    };
-
-    if(tryRun()) return;
-
-    // If not available, attempt to load canvas-confetti from CDN once, then run. Keep this off the critical path.
-    if(!window.__confettiLoading){
-      window.__confettiLoading = true;
-      const s = document.createElement('script');
-      s.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js';
-      s.async = true;
-      s.onload = ()=>{
-        tryRun();
-      };
-      s.onerror = ()=>{
-        // last resort: DOM confetti fallback
-        runDomConfetti();
-      };
-      document.head.appendChild(s);
-      // also set a timeout to fallback if script stalls
-      setTimeout(()=>{ if(!tryRun()) runDomConfetti(); }, 1200);
-    } else {
-      // another invocation while the script is loading - wait briefly and fallback
-      setTimeout(()=>{ if(!tryRun()) runDomConfetti(); }, 600);
+    console.log('[confetti debug] typeof confetti:', typeof confetti, 'window.confetti:', typeof window.confetti);
+  // Use canvas-confetti if available
+  if (typeof confetti === 'function') {
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#60a5fa','#f59e0b','#34d399','#f472b6','#f97316']
+    });
+  } else {
+    // fallback: colored divs
+    const colors = ['#60a5fa','#f59e0b','#34d399','#f472b6','#f97316'];
+    const count = 24;
+    for(let i=0;i<count;i++){
+      const el = document.createElement('div');
+      el.className = 'confetti-piece confetti-anim';
+      el.style.background = colors[i % colors.length];
+      el.style.left = (10 + Math.random()*80) + 'vw';
+      el.style.top = (-5 - Math.random()*10) + 'vh';
+      el.style.width = (6 + Math.random()*8) + 'px';
+      el.style.height = (10 + Math.random()*10) + 'px';
+      el.style.transform = `rotate(${Math.random()*360}deg)`;
+      document.body.appendChild(el);
+      setTimeout(()=>{ el.remove(); }, 1100 + Math.random()*400);
     }
-
-    function runDomConfetti(){
-      const colors = ['#60a5fa','#f59e0b','#34d399','#f472b6','#f97316'];
-      const count = 24;
-      for(let i=0;i<count;i++){
-        const el = document.createElement('div');
-        el.className = 'confetti-piece confetti-anim';
-        el.style.background = colors[i % colors.length];
-        el.style.left = (10 + Math.random()*80) + 'vw';
-        el.style.top = (-5 - Math.random()*10) + 'vh';
-        el.style.width = (6 + Math.random()*8) + 'px';
-        el.style.height = (10 + Math.random()*10) + 'px';
-        el.style.transform = `rotate(${Math.random()*360}deg)`;
-        document.body.appendChild(el);
-        setTimeout(()=>{ el.remove(); }, 1100 + Math.random()*400);
-      }
-    }
+  }
 }
 
 // Read more / Close handlers for blog post
@@ -524,52 +451,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const header = document.getElementById('siteHeader');
   const navLinks = Array.from(document.querySelectorAll('.nav-link'));
   const sections = navLinks.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
-  const underline = document.getElementById('nav-underline');
 
   function headerHeight(){ return header ? header.getBoundingClientRect().height : 0; }
-
-  // Set underline to match a given link element
-  function setUnderlineForEl(el){
-    if (!underline) return;
-    if (!el) {
-      underline.style.opacity = '0';
-      underline.style.width = '0px';
-      return;
-    }
-    const parentRect = underline.parentElement.getBoundingClientRect();
-    // Try to measure only the text/content inside the link (so underline sits under text, not the padded pill)
-    let linkRect = null;
-    try{
-      const range = document.createRange();
-      const textNode = Array.from(el.childNodes).find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
-      if(textNode){
-        range.selectNodeContents(textNode);
-        const r = range.getBoundingClientRect();
-        if(r && r.width > 0){ linkRect = r; }
-      }
-    }catch(e){ /* ignore */ }
-    if(!linkRect){ linkRect = el.getBoundingClientRect(); }
-    underline.style.opacity = '1';
-    underline.style.left = (linkRect.left - parentRect.left) + 'px';
-    underline.style.width = linkRect.width + 'px';
-    // match link color where sensible, fall back to accent
-    const color = getComputedStyle(el).color || getComputedStyle(document.documentElement).getPropertyValue('--accent');
-    underline.style.background = color;
-  }
-
-  // Move underline to currently active link (or first link as fallback)
-  function moveUnderline(){
-    const active = document.querySelector('.nav-link.active') || navLinks[0];
-    setUnderlineForEl(active);
-  }
-
-  // Hover/focus interactions: temporarily show underline under hovered/focused link
-  navLinks.forEach(a=>{
-    a.addEventListener('mouseenter', ()=> setUnderlineForEl(a));
-    a.addEventListener('focus', ()=> setUnderlineForEl(a));
-    a.addEventListener('mouseleave', ()=> moveUnderline());
-    a.addEventListener('blur', ()=> moveUnderline());
-  });
 
   // Adjust scroll to account for header when clicking anchors
   navLinks.forEach(a=>{
@@ -579,10 +462,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
         const target = document.querySelector(href);
         if(target){
           e.preventDefault();
-          // mark this link active immediately so the underline persists while we smooth-scroll
-          navLinks.forEach(l => l.classList.remove('active'));
-          a.classList.add('active');
-          moveUnderline();
           const y = target.getBoundingClientRect().top + window.scrollY - headerHeight() - 8;
           window.scrollTo({ top: y, behavior: 'smooth' });
         }
@@ -599,17 +478,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
       if(ent.isIntersecting){
         navLinks.forEach(l=>l.classList.remove('active'));
         link.classList.add('active');
-        moveUnderline();
       }
     });
   }, { rootMargin: `-${headerHeight()}px 0px -40% 0px`, threshold: 0.2 });
 
   sections.forEach(s=>obs.observe(s));
-
-  // On resize, reposition underline
-  window.addEventListener('resize', moveUnderline);
-  // On load, position underline
-  setTimeout(moveUnderline, 80);
 });
 
 // Smooth-link handler for manually added inline links (accounts for sticky header)
@@ -632,8 +505,37 @@ document.addEventListener('DOMContentLoaded', ()=>{
 });
 
 // Mockup interactivity: click/tap to cycle images, keyboard support for accessibility
+document.addEventListener('DOMContentLoaded', ()=>{
+  function showIndex(container, index){
+    container.setAttribute('data-mockup-index', String(index));
+  }
+
+  document.querySelectorAll('.mockup').forEach(container=>{
+    showIndex(container, Number(container.getAttribute('data-mockup-index')||0));
+
+    // Only cycle images when the container itself (or non-zoom controls) is clicked.
+    container.addEventListener('click', (e)=>{
+      // If a recent pointerdown on the zoom button set a flag, ignore this click (handles touch where pointerdown happens before click).
+      if(container.dataset.__zoom){ delete container.dataset.__zoom; return; }
+      // If the click originated from the zoom button (or its children), ignore so the zoom handler can run.
+      if(e.target.closest && e.target.closest('.zoom-btn')) return;
+      const imgs = container.querySelectorAll(':scope > img');
+      if(imgs.length<2) return;
+      const idx = (Number(container.getAttribute('data-mockup-index')||0) + 1) % imgs.length;
+      showIndex(container, idx);
+    });
+
+    container.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        container.click();
+      }
+    });
+  });
+});
+
 // Image modal (zoom) for mockups
-onReady(()=>{
+document.addEventListener('DOMContentLoaded', ()=>{
   const modal = document.getElementById('imgModal');
   const modalImg = document.getElementById('imgModalImg');
   const closeBtn = modal && modal.querySelector('.close-btn');
@@ -665,9 +567,46 @@ onReady(()=>{
     activeIndex = 0;
   }
 
-  function showIndex(container, index){
-    container.setAttribute('data-mockup-index', String(index));
-  }
+  // Wire zoom buttons inside mockups
+  document.querySelectorAll('.mockup').forEach(container=>{
+    const zoom = container.querySelector('.zoom-btn');
+    if(!zoom) return;
+    // On pointerdown (touch/pointer) mark the container so the following click handler knows to ignore the container click.
+    zoom.addEventListener('pointerdown', (ev)=>{
+      try{ container.dataset.__zoom = '1'; }catch(e){}
+      // clear after a short window
+      setTimeout(()=>{ try{ delete container.dataset.__zoom; }catch(e){} }, 400);
+    });
+    zoom.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      // find the currently visible image inside container
+      const imgs = Array.from(container.querySelectorAll('img'));
+      let visible = null;
+      // If the user is hovering the container, prefer the hover-visible image (second image in the simple hover-swap pattern)
+      try{
+        if(container.matches && container.matches(':hover') && imgs.length > 1){
+          visible = imgs[1];
+        }
+      }catch(e){}
+
+      // Otherwise, pick the first image with a computed opacity > 0.01
+      if(!visible){
+        visible = imgs.find(i=> parseFloat(getComputedStyle(i).opacity || '0') > 0.01);
+      }
+
+      // Fallback to the JS-tracked index or the first image
+      if(!visible){
+        const idx = Number(container.getAttribute('data-mockup-index') || 0);
+        visible = imgs[idx] || imgs[0];
+      }
+
+      if(visible) openModal(visible.src, visible.alt, container, imgs.indexOf(visible));
+    });
+  });
+
+  // modal controls
+  closeBtn?.addEventListener('click', closeModal);
+  modal?.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
 
   function showModalIndex(delta){
     if(!activeContainer) return;
@@ -678,60 +617,12 @@ onReady(()=>{
     if(next){ modalImg.src = next.src; modalImg.alt = next.alt || ''; }
   }
 
-  // Handle zoom buttons specifically
-  document.querySelectorAll('.zoom-btn').forEach(zoom => {
-    zoom.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const container = zoom.closest('.mockup');
-      if (!container) return;
-      
-      const imgs = Array.from(container.querySelectorAll('img'));
-      let visible = null;
-      
-      // Get the currently visible image based on the mockup index
-      const idx = Number(container.getAttribute('data-mockup-index') || 0);
-      visible = imgs[idx] || imgs[0];
-      
-      if(visible) {
-        openModal(visible.src, visible.alt, container, imgs.indexOf(visible));
-      }
-    });
-  });
-
-  // Handle mockup containers for image cycling
-  document.querySelectorAll('.mockup').forEach(container=>{
-    showIndex(container, Number(container.getAttribute('data-mockup-index')||0));
-
-    // Only cycle images when the container itself (or non-zoom controls) is clicked.
-    container.addEventListener('click', (e)=>{
-      // If the click originated from the zoom button (or its children), ignore so the zoom handler can run.
-      if(e.target.closest && e.target.closest('.zoom-btn')) return;
-      const imgs = container.querySelectorAll(':scope > img');
-      if(imgs.length<2) return;
-      const idx = (Number(container.getAttribute('data-mockup-index')||0) + 1) % imgs.length;
-      showIndex(container, idx);
-    });
-
-    container.addEventListener('keydown', (e)=>{
-      if(e.key === 'Enter' || e.key === ' '){
-        e.preventDefault();
-        container.click();
-      }
-    });
-  });
-
-  // modal controls
-  closeBtn?.addEventListener('click', closeModal);
-  modal?.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
-
   prevBtn?.addEventListener('click', ()=> showModalIndex(-1));
   nextBtn?.addEventListener('click', ()=> showModalIndex(1));
 
   document.addEventListener('keydown', (e)=>{
     if(e.key === 'Escape') return closeModal();
-    if(!modal || !modal.classList.contains('open')) return;
+    if(!modal.classList.contains('open')) return;
     if(e.key === 'ArrowLeft') showModalIndex(-1);
     if(e.key === 'ArrowRight') showModalIndex(1);
   });
