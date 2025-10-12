@@ -10,52 +10,6 @@
     {
       "contributionDays": [
         {
-          "date": "2024-10-06",
-          "contributionCount": 0,
-          "color": "#ebedf0",
-          "weekday": 0
-        },
-        {
-          "date": "2024-10-07",
-          "contributionCount": 3,
-          "color": "#9be9a8",
-          "weekday": 1
-        },
-        {
-          "date": "2024-10-08",
-          "contributionCount": 2,
-          "color": "#9be9a8",
-          "weekday": 2
-        },
-        {
-          "date": "2024-10-09",
-          "contributionCount": 4,
-          "color": "#9be9a8",
-          "weekday": 3
-        },
-        {
-          "date": "2024-10-10",
-          "contributionCount": 1,
-          "color": "#9be9a8",
-          "weekday": 4
-        },
-        {
-          "date": "2024-10-11",
-          "contributionCount": 0,
-          "color": "#ebedf0",
-          "weekday": 5
-        },
-        {
-          "date": "2024-10-12",
-          "contributionCount": 0,
-          "color": "#ebedf0",
-          "weekday": 6
-        }
-      ]
-    },
-    {
-      "contributionDays": [
-        {
           "date": "2024-10-13",
           "contributionCount": 0,
           "color": "#ebedf0",
@@ -2442,6 +2396,16 @@
           "contributionCount": 0,
           "color": "#ebedf0",
           "weekday": 6
+        }
+      ]
+    },
+    {
+      "contributionDays": [
+        {
+          "date": "2025-10-12",
+          "contributionCount": 0,
+          "color": "#ebedf0",
+          "weekday": 0
         }
       ]
     }
