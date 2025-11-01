@@ -1,10 +1,10 @@
 {
   "totalContributions": 1195,
   "colors": [
-    "#ffee4a",
-    "#ffc501",
-    "#fe9600",
-    "#03001c"
+    "#9be9a8",
+    "#40c463",
+    "#30a14e",
+    "#216e39"
   ],
   "weeks": [
     {
@@ -36,7 +36,7 @@
         {
           "date": "2024-10-31",
           "contributionCount": 7,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
@@ -64,7 +64,7 @@
         {
           "date": "2024-11-04",
           "contributionCount": 7,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
@@ -76,25 +76,25 @@
         {
           "date": "2024-11-06",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2024-11-07",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2024-11-08",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
           "date": "2024-11-09",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -110,7 +110,7 @@
         {
           "date": "2024-11-11",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
@@ -260,13 +260,13 @@
         {
           "date": "2024-12-04",
           "contributionCount": 7,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2024-12-05",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
@@ -294,13 +294,13 @@
         {
           "date": "2024-12-09",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2024-12-10",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
@@ -346,25 +346,25 @@
         {
           "date": "2024-12-17",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2024-12-18",
           "contributionCount": 7,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2024-12-19",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2024-12-20",
           "contributionCount": 9,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
@@ -450,19 +450,19 @@
         {
           "date": "2025-01-02",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-01-03",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
           "date": "2025-01-04",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -472,19 +472,19 @@
         {
           "date": "2025-01-05",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
           "date": "2025-01-06",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2025-01-07",
           "contributionCount": 10,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
@@ -530,31 +530,31 @@
         {
           "date": "2025-01-14",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-01-15",
           "contributionCount": 19,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 3
         },
         {
           "date": "2025-01-16",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-01-17",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
           "date": "2025-01-18",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -564,43 +564,43 @@
         {
           "date": "2025-01-19",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
           "date": "2025-01-20",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2025-01-21",
           "contributionCount": 11,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-01-22",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2025-01-23",
           "contributionCount": 6,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-01-24",
           "contributionCount": 10,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
           "date": "2025-01-25",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -610,13 +610,13 @@
         {
           "date": "2025-01-26",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
           "date": "2025-01-27",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
@@ -628,25 +628,25 @@
         {
           "date": "2025-01-29",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2025-01-30",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-01-31",
           "contributionCount": 15,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 5
         },
         {
           "date": "2025-02-01",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -656,7 +656,7 @@
         {
           "date": "2025-02-02",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
@@ -668,31 +668,31 @@
         {
           "date": "2025-02-04",
           "contributionCount": 11,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-02-05",
           "contributionCount": 9,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2025-02-06",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-02-07",
           "contributionCount": 8,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
           "date": "2025-02-08",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -702,43 +702,43 @@
         {
           "date": "2025-02-09",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
           "date": "2025-02-10",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2025-02-11",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-02-12",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2025-02-13",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-02-14",
           "contributionCount": 6,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
           "date": "2025-02-15",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -748,19 +748,19 @@
         {
           "date": "2025-02-16",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
           "date": "2025-02-17",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2025-02-18",
           "contributionCount": 16,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 2
         },
         {
@@ -772,13 +772,13 @@
         {
           "date": "2025-02-20",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-02-21",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
@@ -800,31 +800,31 @@
         {
           "date": "2025-02-24",
           "contributionCount": 10,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2025-02-25",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-02-26",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2025-02-27",
           "contributionCount": 6,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-02-28",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
@@ -840,25 +840,25 @@
         {
           "date": "2025-03-02",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
           "date": "2025-03-03",
           "contributionCount": 12,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 1
         },
         {
           "date": "2025-03-04",
           "contributionCount": 20,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 2
         },
         {
           "date": "2025-03-05",
           "contributionCount": 8,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
@@ -870,7 +870,7 @@
         {
           "date": "2025-03-07",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
@@ -892,19 +892,19 @@
         {
           "date": "2025-03-10",
           "contributionCount": 6,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2025-03-11",
           "contributionCount": 8,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-03-12",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
@@ -944,7 +944,7 @@
         {
           "date": "2025-03-18",
           "contributionCount": 6,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
@@ -956,13 +956,13 @@
         {
           "date": "2025-03-20",
           "contributionCount": 10,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-03-21",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
@@ -984,31 +984,31 @@
         {
           "date": "2025-03-24",
           "contributionCount": 7,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2025-03-25",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-03-26",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2025-03-27",
           "contributionCount": 7,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-03-28",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
@@ -1030,19 +1030,19 @@
         {
           "date": "2025-03-31",
           "contributionCount": 14,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 1
         },
         {
           "date": "2025-04-01",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-04-02",
           "contributionCount": 8,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
@@ -1054,13 +1054,13 @@
         {
           "date": "2025-04-04",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
           "date": "2025-04-05",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -1070,31 +1070,31 @@
         {
           "date": "2025-04-06",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
           "date": "2025-04-07",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2025-04-08",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-04-09",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2025-04-10",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
@@ -1174,31 +1174,31 @@
         {
           "date": "2025-04-22",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-04-23",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2025-04-24",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-04-25",
           "contributionCount": 11,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
           "date": "2025-04-26",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -1208,19 +1208,19 @@
         {
           "date": "2025-04-27",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
           "date": "2025-04-28",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2025-04-29",
           "contributionCount": 10,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
@@ -1244,7 +1244,7 @@
         {
           "date": "2025-05-03",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -1254,25 +1254,25 @@
         {
           "date": "2025-05-04",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
           "date": "2025-05-05",
           "contributionCount": 17,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 1
         },
         {
           "date": "2025-05-06",
           "contributionCount": 11,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-05-07",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
@@ -1290,7 +1290,7 @@
         {
           "date": "2025-05-10",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -1318,25 +1318,25 @@
         {
           "date": "2025-05-14",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2025-05-15",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-05-16",
           "contributionCount": 6,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
           "date": "2025-05-17",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -1346,13 +1346,13 @@
         {
           "date": "2025-05-18",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
           "date": "2025-05-19",
           "contributionCount": 7,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
@@ -1450,7 +1450,7 @@
         {
           "date": "2025-06-03",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
@@ -1496,13 +1496,13 @@
         {
           "date": "2025-06-10",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-06-11",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
@@ -1520,7 +1520,7 @@
         {
           "date": "2025-06-14",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -1536,7 +1536,7 @@
         {
           "date": "2025-06-16",
           "contributionCount": 8,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
@@ -1554,19 +1554,19 @@
         {
           "date": "2025-06-19",
           "contributionCount": 20,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 4
         },
         {
           "date": "2025-06-20",
           "contributionCount": 12,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 5
         },
         {
           "date": "2025-06-21",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -1582,37 +1582,37 @@
         {
           "date": "2025-06-23",
           "contributionCount": 24,
-          "color": "#fe9600",
+          "color": "#30a14e",
           "weekday": 1
         },
         {
           "date": "2025-06-24",
           "contributionCount": 27,
-          "color": "#fe9600",
+          "color": "#30a14e",
           "weekday": 2
         },
         {
           "date": "2025-06-25",
           "contributionCount": 32,
-          "color": "#fe9600",
+          "color": "#30a14e",
           "weekday": 3
         },
         {
           "date": "2025-06-26",
           "contributionCount": 7,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-06-27",
           "contributionCount": 8,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
           "date": "2025-06-28",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -1628,25 +1628,25 @@
         {
           "date": "2025-06-30",
           "contributionCount": 8,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2025-07-01",
           "contributionCount": 10,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-07-02",
           "contributionCount": 9,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2025-07-03",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
@@ -1658,7 +1658,7 @@
         {
           "date": "2025-07-05",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -1674,37 +1674,37 @@
         {
           "date": "2025-07-07",
           "contributionCount": 9,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2025-07-08",
           "contributionCount": 6,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-07-09",
           "contributionCount": 18,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 3
         },
         {
           "date": "2025-07-10",
           "contributionCount": 9,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-07-11",
           "contributionCount": 19,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 5
         },
         {
           "date": "2025-07-12",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -1714,37 +1714,37 @@
         {
           "date": "2025-07-13",
           "contributionCount": 14,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 0
         },
         {
           "date": "2025-07-14",
           "contributionCount": 23,
-          "color": "#fe9600",
+          "color": "#30a14e",
           "weekday": 1
         },
         {
           "date": "2025-07-15",
           "contributionCount": 11,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
           "date": "2025-07-16",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2025-07-17",
           "contributionCount": 8,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-07-18",
           "contributionCount": 9,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
@@ -1760,13 +1760,13 @@
         {
           "date": "2025-07-20",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
           "date": "2025-07-21",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
@@ -1784,7 +1784,7 @@
         {
           "date": "2025-07-24",
           "contributionCount": 1,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
@@ -1796,7 +1796,7 @@
         {
           "date": "2025-07-26",
           "contributionCount": 2,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -1806,31 +1806,31 @@
         {
           "date": "2025-07-27",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
           "date": "2025-07-28",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2025-07-29",
           "contributionCount": 15,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 2
         },
         {
           "date": "2025-07-30",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2025-07-31",
           "contributionCount": 15,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 4
         },
         {
@@ -2048,31 +2048,31 @@
         {
           "date": "2025-09-02",
           "contributionCount": 16,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 2
         },
         {
           "date": "2025-09-03",
           "contributionCount": 3,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2025-09-04",
           "contributionCount": 15,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 4
         },
         {
           "date": "2025-09-05",
           "contributionCount": 9,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
           "date": "2025-09-06",
           "contributionCount": 4,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -2082,37 +2082,37 @@
         {
           "date": "2025-09-07",
           "contributionCount": 6,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
           "date": "2025-09-08",
           "contributionCount": 9,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2025-09-09",
           "contributionCount": 15,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 2
         },
         {
           "date": "2025-09-10",
           "contributionCount": 10,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 3
         },
         {
           "date": "2025-09-11",
           "contributionCount": 18,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 4
         },
         {
           "date": "2025-09-12",
           "contributionCount": 28,
-          "color": "#fe9600",
+          "color": "#30a14e",
           "weekday": 5
         },
         {
@@ -2134,37 +2134,37 @@
         {
           "date": "2025-09-15",
           "contributionCount": 45,
-          "color": "#03001c",
+          "color": "#216e39",
           "weekday": 1
         },
         {
           "date": "2025-09-16",
           "contributionCount": 33,
-          "color": "#fe9600",
+          "color": "#30a14e",
           "weekday": 2
         },
         {
           "date": "2025-09-17",
           "contributionCount": 22,
-          "color": "#ffc501",
+          "color": "#40c463",
           "weekday": 3
         },
         {
           "date": "2025-09-18",
           "contributionCount": 7,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 4
         },
         {
           "date": "2025-09-19",
           "contributionCount": 8,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 5
         },
         {
           "date": "2025-09-20",
           "contributionCount": 7,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 6
         }
       ]
@@ -2174,19 +2174,19 @@
         {
           "date": "2025-09-21",
           "contributionCount": 6,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 0
         },
         {
           "date": "2025-09-22",
           "contributionCount": 5,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 1
         },
         {
           "date": "2025-09-23",
           "contributionCount": 10,
-          "color": "#ffee4a",
+          "color": "#9be9a8",
           "weekday": 2
         },
         {
@@ -2436,6 +2436,12 @@
           "contributionCount": 0,
           "color": "#ebedf0",
           "weekday": 5
+        },
+        {
+          "date": "2025-11-01",
+          "contributionCount": 0,
+          "color": "#ebedf0",
+          "weekday": 6
         }
       ]
     }
