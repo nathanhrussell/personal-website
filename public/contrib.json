@@ -2412,6 +2412,12 @@
           "contributionCount": 0,
           "color": "#ebedf0",
           "weekday": 1
+        },
+        {
+          "date": "2026-01-20",
+          "contributionCount": 0,
+          "color": "#ebedf0",
+          "weekday": 2
         }
       ]
     }
